@@ -111,9 +111,6 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
                         await Provider.of<HouseProvider>(context, listen: false)
                             .createHouse('My house', '');
                       } if (!context.mounted) return;
-                      Provider.of<UserProvider>(context, listen: false).houses =
-                      await Provider.of<HouseProvider>(context, listen: false)
-                          .getHouse(Provider.of<UserProvider>(context, listen: false).email);
                       if (!context.mounted) return;
                       Navigator.pushAndRemoveUntil(
                         context,

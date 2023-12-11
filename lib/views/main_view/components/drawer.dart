@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
 
 import '../../../main.dart';
 import '../../../providers/house_provider.dart';
+import '../../../providers/record_provider.dart';
 import '../../../providers/user_provider.dart';
-import '../main_view.dart';
 import 'create_house.dart';
 import 'join_house.dart';
 
@@ -48,20 +48,44 @@ class MyDrawer extends StatelessWidget {
               ),
             ),
             Container(
-              height: Provider.of<UserProvider>(context).houses.length*50,
+              height: Provider.of<UserProvider>(context).houses.isNotEmpty
+                  ? Provider.of<UserProvider>(context).houses.length * 50
+                  : 50,
               child: Consumer<HouseProvider>(
                 builder:
                     (BuildContext context, HouseProvider value, Widget? child) {
                   return ListView.builder(
-                    itemCount: Provider.of<UserProvider>(context).houses.length,
+                    padding: EdgeInsets.zero,
+                    itemCount:
+                        Provider.of<UserProvider>(context).houses.isNotEmpty
+                            ? Provider.of<UserProvider>(context).houses.length
+                            : 1,
                     itemExtent: 50,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const Icon(Icons.house),
-                        title: Text(Provider.of<UserProvider>(context)
-                            .houses[index]
-                            .name),
-                      );
+                      return Provider.of<UserProvider>(context).houses.isEmpty
+                          ? null
+                          : ListTile(
+                              onTap: () async{
+                                await Provider.of<MainViewVModel>(context,listen: false).updateUsers(Provider.of<UserProvider>(context,listen: false).houses[index].id);
+
+                                if(!context.mounted)return;
+
+                                Provider.of<UserProvider>(context, listen: false).records =
+                                    await Provider.of<RecordProvider>(context, listen: false)
+                                    .getAllRecordsByUsersAndHouse(
+                                        Provider.of<UserProvider>(context,listen: false).houses[index].id,
+                                    Provider.of<UserProvider>(context, listen: false).id);
+
+                                if(!context.mounted)return;
+
+                                Provider.of<MainViewVModel>(context,listen: false).house = Provider.of<UserProvider>(context,listen: false).houses[index];
+                                Navigator.pop(context);
+                                },
+                              leading: const Icon(Icons.house),
+                              title: Text(Provider.of<UserProvider>(context,listen: false)
+                                  .houses[index]
+                                  .name),
+                            );
                     },
                   );
                 },
@@ -100,13 +124,13 @@ class MyDrawer extends StatelessWidget {
                 title: const Text('Log out'),
                 onTap: () async {
                   SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
+                      await SharedPreferences.getInstance();
                   prefs.setBool('isLoggedIn', false);
                   if (!context.mounted) return;
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const MyApp()),
-                        (route) => false,
+                    (route) => false,
                   );
                 }),
           ],

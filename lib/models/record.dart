@@ -1,5 +1,5 @@
-class Record{
-  int id;
+class RecordPayment{
+  int id = 0;
   int money;
   String date;
   String information;
@@ -8,18 +8,18 @@ class Record{
   int payerId;
   String houseId;
   List<int> participantIds;
-  Record({required this.participantIds,required this.houseId, required this.paymentGroup,required this.id, required this.money, required this.date, required this.information, required this.paid, required this.payerId});
-  factory Record.fromJson(Map<String, dynamic> json) {
-    return Record(
+  RecordPayment({required this.participantIds,required this.houseId, required this.paymentGroup,required this.id, required this.money, required this.date, required this.information, required this.paid, required this.payerId});
+  factory RecordPayment.fromJson(Map<String, dynamic> json) {
+    return RecordPayment(
       id: json['id'] ?? 0,
-      information: json['information'] ?? '',
-      date: json['date'] ?? '',
       money: json['money'] ?? 0,
+      date: json['date']?? '',
+      information: json['information'] ?? '',
+      paymentGroup: json['paymentGroup'] ?? '',
       paid: json['paid'] ?? false,
-      payerId: json['payer'] ?? 0,
-      paymentGroup:  json['paymentGroup'] ?? 0,
+      payerId: json['payerId'] ?? 0,
       houseId: json['houseId'] ?? '',
-      participantIds: json['participantIds'] ?? {}
+      participantIds: List<int>.from(json['participantIds']),
     );
   }
   Map<String, dynamic> toJson() {

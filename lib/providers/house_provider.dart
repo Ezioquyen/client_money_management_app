@@ -6,9 +6,9 @@ import 'package:untitled1/models/user_house.dart';
 import 'package:untitled1/providers/user_provider.dart';
 import 'package:untitled1/repository/house_repository.dart';
 
+
 class HouseProvider extends ChangeNotifier {
   late UserProvider userProvider;
-
   final houseRepository = HouseRepository();
 
   Future<bool> checkUserHouse(UserProvider userProvider, String id) async {

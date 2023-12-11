@@ -1,6 +1,5 @@
 import '../data/network/network_api_service.dart';
 import '../res/api_url.dart';
-
 class RecordRepository{
   final _apiNetworkService = NetworkApiService();
   Future<dynamic> getAllRecordsByUsersAndHouseApi(String houseId, int userId) async{
@@ -8,7 +7,7 @@ class RecordRepository{
     return response;
   }
   Future<dynamic> getRecordsByUsersAndGroupApi(String houseId, int userId, int groupId) async{
-    dynamic response = await _apiNetworkService.getApi("${ApiUrl.recordApi}/$houseId/$userId/$groupId");
+   dynamic response = await _apiNetworkService.getApi("${ApiUrl.recordApi}/$houseId/$userId/$groupId");
     return response;
   }
   Future<dynamic> getAllRecordsByPayerAndHouseApi(String houseId, int payerId) async{

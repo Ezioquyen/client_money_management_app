@@ -1,11 +1,12 @@
+import 'package:untitled1/models/record.dart';
+
 import '../models/house.dart';
 class UserProvider{
   int id;
-  String username;
+  String username = '';
   String email;
-  late List<House> houses;
-  late List<Record> records;
-
+  List<House> houses = [];
+  List<RecordPayment> records = [];
 
  UserProvider({required this.id,required this.username,required this.email});
 
@@ -20,9 +21,6 @@ class UserProvider{
     id = UserProvider.fromJson(user).id;
     username = UserProvider.fromJson(user).username;
     email = UserProvider.fromJson(user).email;
- }
- void setHouses(dynamic houses){
-    this.houses = houses;
  }
 
 }

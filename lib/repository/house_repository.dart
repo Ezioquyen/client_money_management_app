@@ -6,6 +6,10 @@ import 'package:untitled1/res/api_url.dart';
 
 class HouseRepository{
   final _apiNetworkService = NetworkApiService();
+  Future<dynamic> getUsersByHouseApi(String id) async{
+    dynamic response = await _apiNetworkService.getApi("${ApiUrl.houseApi}/$id/users");
+    return response;
+  }
   Future<dynamic> getHouseApi(String email) async{
     dynamic response = await _apiNetworkService.getApi("${ApiUrl.userApi}/$email/houses");
     return response;

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:untitled1/models/record.dart';
+import 'package:untitled1/providers/record_provider.dart';
 import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
+import '../../providers/house_provider.dart';
 import '../../providers/user_provider.dart';
 import 'components/drawer.dart';
 
@@ -40,11 +43,13 @@ class MainViewChildState extends State<MainViewChild> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text(
-          Provider.of<MainViewVModel>(context).house.name,
-          style: const TextStyle(
-              fontSize: 17, color: Colors.white, letterSpacing: 0.53),
-        ),
+        title: Consumer<MainViewVModel>(builder: (context, myModel, child) {
+          return Text(
+            Provider.of<MainViewVModel>(context).house.name,
+            style: const TextStyle(
+                fontSize: 17, color: Colors.white, letterSpacing: 0.53),
+          );
+        }),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(30),
@@ -151,7 +156,7 @@ class MainViewChildState extends State<MainViewChild> {
     );
   }
 
-  Widget record() {
+  Widget record(RecordPayment recordPayment) {
     return Container(
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.black12))),
@@ -166,19 +171,21 @@ class MainViewChildState extends State<MainViewChild> {
             ),
             Container(
               margin: const EdgeInsets.only(left: 20),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'User',
-                    style: TextStyle(
-                        fontSize: 22,
+                    Provider.of<MainViewVModel>(context)
+                        .users[recordPayment.payerId]!
+                        .username,
+                    style: const TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Colors.blueAccent),
                   ),
                   Text(
-                    '59.000 đ - Sữa',
-                    style: TextStyle(
+                    '${recordPayment.money} đ - ${recordPayment.information}',
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Colors.black,
                     ),
@@ -197,77 +204,112 @@ class MainViewChildState extends State<MainViewChild> {
       child: Column(
         children: [
           Container(
+
             margin: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               color: Colors.white70,
               borderRadius: BorderRadius.circular(15),
             ),
             child: SizedBox(
-              height: 90,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Set the number of buttons
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Add your button action here
-                        print('Button $index pressed');
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 50.0,
-                            height: 50.0,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.blue,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '$index',
-                                style: const TextStyle(color: Colors.white),
+                height: 90,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5, // Set the number of buttons
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Add your button action here
+                          print('Button $index pressed');
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.blue,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '$index',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
-                          ),
-                          Text('$index'),
-                        ],
+                            Text('$index'),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                    );
+                  },
+                )),
           ),
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white70,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: [
-                    record(),
-                    record(),
-                  ],
-                ),
-              ),
-            ),
+            child: Consumer<MainViewVModel>(builder: (context, myModel, child) {
+              return Column(
+                children: [
+                  Container(
+                    height: 350,
+                    margin: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white70,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: Provider.of<UserProvider>(context)
+                                  .records
+                                  .isNotEmpty
+                              ? Provider.of<UserProvider>(context).records.length
+                              : 1,
+                          itemExtent: 70,
+                          itemBuilder: (context, index) {
+                            return Provider.of<UserProvider>(context)
+                                    .records
+                                    .isEmpty
+                                ? null
+                                : record(Provider.of<UserProvider>(context)
+                                    .records[index]);
+                          },
+                        )),
+                  ),
+                  TextButton(onPressed: null, child: Text('Xem them')),
+                ],
+              );
+            }),
           )
         ],
       ),
     );
   }
 
+  Future<void> defineState() async {
+    //set houses
+    Provider.of<UserProvider>(context, listen: false).houses =
+        await Provider.of<HouseProvider>(context, listen: false)
+            .getHouse(Provider.of<UserProvider>(context, listen: false).email);
+    if (!context.mounted) return;
+    Provider.of<MainViewVModel>(context, listen: false).updateUsers(
+        Provider.of<UserProvider>(context, listen: false).houses.first.id);
+    Provider.of<MainViewVModel>(context, listen: false).house =
+        Provider.of<UserProvider>(context, listen: false).houses.first;
+    Provider.of<UserProvider>(context, listen: false).records =
+        await Provider.of<RecordProvider>(context, listen: false)
+            .getAllRecordsByUsersAndHouse(
+                Provider.of<MainViewVModel>(context, listen: false).house.id,
+                Provider.of<UserProvider>(context, listen: false).id);
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    Provider.of<MainViewVModel>(context, listen: false).house =
-        Provider.of<UserProvider>(context, listen: false).houses.first;
+    defineState();
   }
 }
