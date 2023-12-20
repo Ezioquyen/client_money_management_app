@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:untitled1/models/record.dart';
 import 'package:untitled1/providers/record_provider.dart';
 import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
+import 'package:untitled1/views/houseControl/house_control_view.dart';
 import '../../providers/house_provider.dart';
 import '../../providers/user_provider.dart';
 import 'components/drawer.dart';
@@ -95,6 +96,9 @@ class MainViewChildState extends State<MainViewChild> {
             label: 'Thống kê',
           ),
         ],
+        onTap: (int index) {
+          onTapHandler(index);
+        },
       ),
       floatingActionButton: const FloatingActionButton(
         onPressed: null,
@@ -103,7 +107,15 @@ class MainViewChildState extends State<MainViewChild> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
-
+  void onTapHandler(int index)  {
+     if(index == 0){
+       Navigator.push(
+         context,
+         MaterialPageRoute(
+             builder: (context) => const HouseControlView()),
+       );
+    }
+  }
   Widget getAppBottomView(UserProvider user) {
     return Container(
       padding: const EdgeInsets.only(left: 30, bottom: 20),
@@ -289,7 +301,7 @@ class MainViewChildState extends State<MainViewChild> {
   }
 
   Future<void> defineState() async {
-    //set houses
+
     Provider.of<UserProvider>(context, listen: false).houses =
         await Provider.of<HouseProvider>(context, listen: false)
             .getHouse(Provider.of<UserProvider>(context, listen: false).email);

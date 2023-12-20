@@ -1,6 +1,6 @@
 
 class ApiUrl {
-  static const String ip = '192.168.1.6';
+  static const String ip = '192.168.1.4';
   static const String baseUrl = "http://$ip:8080";
   static const String loginApi ="http://$ip:8080/Login";
   static const String signupApi ="http://$ip:8080/SignUp";

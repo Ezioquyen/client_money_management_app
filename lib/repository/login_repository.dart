@@ -5,7 +5,7 @@ class LoginRepository {
   final _apiService = NetworkApiService();
 
   Future<dynamic> loginApi(String email) async {
-    dynamic response = await _apiService.getApi('${ApiUrl.userApi}/$email');
+    dynamic response = await _apiService.getApi('${ApiUrl.userApi}/email/$email');
     return response;
   }
 

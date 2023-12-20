@@ -11,7 +11,7 @@ class HouseRepository{
     return response;
   }
   Future<dynamic> getHouseApi(String email) async{
-    dynamic response = await _apiNetworkService.getApi("${ApiUrl.userApi}/$email/houses");
+    dynamic response = await _apiNetworkService.getApi("${ApiUrl.userApi}/houses/$email");
     return response;
   }
   Future<dynamic> checkUserHouseApi(String email, String houseId) async{
@@ -31,7 +31,7 @@ class HouseRepository{
     return response;
   }
   Future<dynamic> isUserHasHouse(int id) async {
-    dynamic response = await _apiNetworkService.getApi('${ApiUrl.userApi}/$id/house_check');
+    dynamic response = await _apiNetworkService.getApi('${ApiUrl.userApi}/house_check/$id');
     return response;
   }
 }

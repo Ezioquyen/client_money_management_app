@@ -1,0 +1,3 @@
+enum MemberGroup{
+  member, group
+}
