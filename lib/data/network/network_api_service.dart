@@ -27,7 +27,7 @@ class NetworkApiService extends BaseApiService {
     try {
       print("url: $url");
       print("data: $data");
-      Map<String, String> headers = {"Content-type": "application/json"};
+      Map<String, String> headers = {"Content-type": "application/json; charset=utf-8"};
     await http.post(Uri.parse(url), body: json.encode(data),headers: headers).timeout(const Duration(seconds: 60));
 
     } on SocketException {
@@ -38,7 +38,7 @@ class NetworkApiService extends BaseApiService {
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        dynamic responseJson = jsonDecode(response.body);
+        dynamic responseJson = jsonDecode(utf8.decode(response.bodyBytes));
         return responseJson;
       case 400:
         throw TimeOutExceptions('Api returned 400');

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled1/providers/house_provider.dart';
 import 'package:untitled1/views/main_view/main_view.dart';
 
 import '../providers/user_provider.dart';
@@ -43,6 +42,7 @@ class LoginPageBodyWidget extends StatefulWidget {
 class _BodyWidgetState extends State<LoginPageBodyWidget> {
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     LoginViewModel loginModelView = LoginViewModel();
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -79,8 +79,8 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
                   onPressed: () async {
                     if (await loginModelView.condition()) {
                       if (!context.mounted) return;
-                      Provider.of<UserProvider>(context, listen: false)
-                          .setUser(await loginModelView.getUser());
+                      await loginModelView.getUser();
+                     userProvider.setUser(loginModelView.user);
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
                       if (!context.mounted) return;
@@ -97,21 +97,9 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
 
                       prefs.setString(
                           'email',
-                          Provider.of<UserProvider>(context, listen: false)
-                              .email);
+                         userProvider.email);
                       prefs.setBool('isLoggedIn', true);
-                      Provider.of<HouseProvider>(context, listen: false)
-                              .userProvider =
-                          Provider.of<UserProvider>(context, listen: false);
-                      if (await Provider.of<HouseProvider>(context,
-                                  listen: false)
-                              .isUserHasHouse() ==
-                          false) {
-                        if (!context.mounted) return;
-                        await Provider.of<HouseProvider>(context, listen: false)
-                            .createHouse('My house', '');
-                      } if (!context.mounted) return;
-                      if (!context.mounted) return;
+
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

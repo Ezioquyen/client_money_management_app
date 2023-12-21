@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled1/providers/house_provider.dart';
-import 'package:untitled1/providers/record_provider.dart';
 import 'package:untitled1/providers/user_provider.dart';
 import 'package:untitled1/views/login_view.dart';
 import 'package:untitled1/views/main_view/main_view.dart';
@@ -15,13 +13,6 @@ void main() {
         value:
             UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
       ),
-      Provider<RecordProvider>.value(
-        value:
-       RecordProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (context) => HouseProvider(),
-      )
     ],
     child: const MyApp(),
   ));

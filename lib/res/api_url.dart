@@ -7,4 +7,5 @@ class ApiUrl {
   static const String houseApi ="http://$ip:8080/houses";
   static const String userApi ="http://$ip:8080/users";
   static const String recordApi ="http://$ip:8080/records";
+  static const String groupApi = "http://$ip:8080/groups";
 }

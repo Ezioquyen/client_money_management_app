@@ -1,5 +1,3 @@
-
-
 class House{
   String id;
   String name;

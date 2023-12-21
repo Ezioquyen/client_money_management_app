@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../../providers/house_provider.dart';
+import '../../../viewmodels/controller/main_view_vm.dart';
 
 class JoinHouse extends StatelessWidget {
-  const JoinHouse({super.key});
+  final MainViewVModel mainViewVModel;
+
+
+  const JoinHouse({Key? key, required this.mainViewVModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     TextEditingController code = TextEditingController();
     return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: MediaQuery.of(context).size.height*0.5,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25.0), topRight: Radius.circular(25.0))),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
               controller: code,
@@ -28,8 +33,7 @@ class JoinHouse extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (code.value.text != '') {
-                    Provider.of<HouseProvider>(context, listen: false)
-                        .joinHouse(false, code.value.text);
+                   mainViewVModel.joinHouse(false, code.value.text);
                   }
                   Navigator.pop(context);
                 },

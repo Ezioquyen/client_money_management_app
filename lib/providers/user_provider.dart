@@ -1,12 +1,10 @@
-import 'package:untitled1/models/record.dart';
 
-import '../models/house.dart';
+import '../models/user/user.dart';
+
 class UserProvider{
   int id;
   String username = '';
   String email;
-  List<House> houses = [];
-  List<RecordPayment> records = [];
 
  UserProvider({required this.id,required this.username,required this.email});
 
@@ -15,5 +13,7 @@ class UserProvider{
     username = user.username;
     email = user.email;
  }
-
+static User toUser(UserProvider userProvider){
+   return User(id: userProvider.id, username: userProvider.username, email: userProvider.email);
+}
 }

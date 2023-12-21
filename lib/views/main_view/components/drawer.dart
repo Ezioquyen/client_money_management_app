@@ -4,8 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
 
 import '../../../main.dart';
-import '../../../providers/house_provider.dart';
-import '../../../providers/record_provider.dart';
+
+import '../../../models/house.dart';
 import '../../../providers/user_provider.dart';
 import 'create_house.dart';
 import 'join_house.dart';
@@ -15,6 +15,7 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MainViewVModel mainViewVModel = Provider.of<MainViewVModel>(context);
     return Drawer(
       child: Container(
         height: 500,
@@ -47,49 +48,39 @@ class MyDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              height: Provider.of<UserProvider>(context).houses.isNotEmpty
-                  ? Provider.of<UserProvider>(context).houses.length * 50
-                  : 50,
-              child: Consumer<HouseProvider>(
-                builder:
-                    (BuildContext context, HouseProvider value, Widget? child) {
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount:
-                        Provider.of<UserProvider>(context).houses.isNotEmpty
-                            ? Provider.of<UserProvider>(context).houses.length
-                            : 1,
-                    itemExtent: 50,
-                    itemBuilder: (context, index) {
-                      return Provider.of<UserProvider>(context).houses.isEmpty
-                          ? null
-                          : ListTile(
-                              onTap: () async{
-                                await Provider.of<MainViewVModel>(context,listen: false).updateUsers(Provider.of<UserProvider>(context,listen: false).houses[index].id);
-
-                                if(!context.mounted)return;
-
-                                Provider.of<UserProvider>(context, listen: false).records =
-                                    await Provider.of<RecordProvider>(context, listen: false)
-                                    .getAllRecordsByUsersAndHouse(
-                                        Provider.of<UserProvider>(context,listen: false).houses[index].id,
-                                    Provider.of<UserProvider>(context, listen: false).id);
-
-                                if(!context.mounted)return;
-
-                                Provider.of<MainViewVModel>(context,listen: false).house = Provider.of<UserProvider>(context,listen: false).houses[index];
-                                Navigator.pop(context);
+            Selector<MainViewVModel,List<House>>(
+               selector: (context,myProvider)=>myProvider.houses,
+              builder: (BuildContext context, houses,
+                  child) {
+                return Container(
+                    height: houses.isNotEmpty
+                        ? houses.length * 50
+                        : 50,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: houses.isNotEmpty
+                          ? houses.length
+                          : 1,
+                      itemExtent: 50,
+                      itemBuilder: (context, index) {
+                        return houses.isEmpty
+                            ? null
+                            : ListTile(
+                                onTap: () async {
+                                  mainViewVModel.house = houses[index];
+                                  await mainViewVModel.updateUsers();
+                                  if (!context.mounted) return;
+                                  await mainViewVModel
+                                      .getAllRecordsByUsersAndHouse();
+                                  if (!context.mounted) return;
+                                  Navigator.pop(context);
                                 },
-                              leading: const Icon(Icons.house),
-                              title: Text(Provider.of<UserProvider>(context,listen: false)
-                                  .houses[index]
-                                  .name),
-                            );
-                    },
-                  );
-                },
-              ),
+                                leading: const Icon(Icons.house),
+                                title: Text(mainViewVModel.houses[index].name),
+                              );
+                      },
+                    ));
+              },
             ),
             ListTile(
               leading: const Icon(Icons.supervised_user_circle),
@@ -100,7 +91,9 @@ class MyDrawer extends StatelessWidget {
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return const JoinHouse();
+                    return JoinHouse(
+                      mainViewVModel: mainViewVModel,
+                    );
                   },
                 );
               },
@@ -114,7 +107,9 @@ class MyDrawer extends StatelessWidget {
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return const CreateHouse();
+                    return CreateHouse(
+                      mainViewVModel: mainViewVModel,
+                    );
                   },
                 );
               },
