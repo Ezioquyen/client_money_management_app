@@ -1,3 +1,3 @@
 enum MemberGroup{
-  member, group
+  member, group , house
 }

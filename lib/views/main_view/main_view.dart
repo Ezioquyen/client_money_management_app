@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled1/models/record.dart';
 
-import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
 import 'package:untitled1/views/houseControl/house_control_view.dart';
-import 'package:untitled1/views/splash_screen.dart';
+import 'package:untitled1/views/main_view/components/create_record.dart';
+import '../../models/house.dart';
 import '../../providers/user_provider.dart';
+import '../../viewModels/controller/main_view_model.dart';
 import 'components/drawer.dart';
 
 class MainView extends StatelessWidget {
@@ -14,7 +16,8 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MainViewVModel(),
+      create: (context) => MainViewModel(UserProvider.toUser(
+          Provider.of<UserProvider>(context, listen: false))),
       child: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -36,93 +39,95 @@ class MainViewChild extends StatefulWidget {
 }
 
 class MainViewChildState extends State<MainViewChild> {
-  bool isLoaded = false;
-
   @override
   Widget build(BuildContext context) {
-    return !isLoaded
-        ? const SplashScreen()
-        : Scaffold(
-            backgroundColor: Colors.transparent,
-            drawer: const MyDrawer(),
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              centerTitle: true,
-              title:
-                  Consumer<MainViewVModel>(builder: (context, myModel, child) {
-                return Text(
-                  Provider.of<MainViewVModel>(context).house.name,
-                  style: const TextStyle(
-                      fontSize: 17, color: Colors.white, letterSpacing: 0.53),
-                );
-              }),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(30),
-                ),
-              ),
-              leading: Builder(
-                  builder: (context) => InkWell(
-                        onTap: () => Scaffold.of(context).openDrawer(),
-                        child: const Icon(
-                          Icons.subject,
-                          color: Colors.white,
-                        ),
-                      )),
-              actions: [
-                InkWell(
-                  onTap: () {},
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.notifications,
-                      size: 20,
+    MainViewModel mainViewModel = Provider.of<MainViewModel>(context);
+    return Scaffold(
+      backgroundColor: Colors.black12,
+      drawer: const MyDrawer(),
+      floatingActionButton:  SpeedDial(
+          icon: Icons.add,
+          onPress: () {
+            showModalBottomSheet(
+                builder: (BuildContext context) => CreateRecord(
+                      mainViewModel:
+                          mainViewModel,
                     ),
+                context: context);
+          },
+        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      appBar: AppBar(
+        backgroundColor: Colors.black26,
+        centerTitle: true,
+        title: Selector<MainViewModel, House>(
+            selector: (context, myModel) => myModel.house,
+            builder: (context, house, child) {
+              return Text(
+                house.name,
+                style: const TextStyle(
+                    fontSize: 17, color: Colors.white, letterSpacing: 0.53),
+              );
+            }),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+        leading: Builder(
+            builder: (context) => InkWell(
+                  onTap: () => Scaffold.of(context).openDrawer(),
+                  child: const Icon(
+                    Icons.subject,
+                    color: Colors.white,
                   ),
-                ),
-              ],
-              bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(110.0),
-                  child: getAppBottomView(Provider.of<UserProvider>(context))),
+                )),
+        actions: [
+          InkWell(
+            onTap: () {},
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.notifications,
+                size: 20,
+              ),
             ),
-            body: showRecord(),
-            bottomNavigationBar: BottomNavigationBar(
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Your house',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite),
-                  label: 'Tạo chi tiêu',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.stacked_line_chart),
-                  label: 'Thống kê',
-                ),
-              ],
-              onTap: (int index) {
-                if(index==0){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (c) => HouseControlView(
-                  mainViewVModel: Provider.of<MainViewVModel>(context,listen: false),
-                ),
-                ));
-              }
-              },
+          ),
+        ],
+        bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(110.0),
+            child: getAppBottomView(Provider.of<UserProvider>(context))),
+      ),
+      body: showRecord(),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+                icon: const Icon(Icons.house),
+                tooltip: "Your house",
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (c) => HouseControlView(
+                              mainViewModel: Provider.of<MainViewModel>(context,
+                                  listen: false))));
+                }),
+            const SizedBox(
+              width: 200,
             ),
-            floatingActionButton: const FloatingActionButton(
-              onPressed: null,
-              child: Icon(Icons.add),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-          );
+            const IconButton(
+                icon: Icon(Icons.stacked_line_chart),
+                tooltip: "Static",
+                onPressed: null),
+          ],
+        ),
+      ),
+    );
   }
-
-
 
   Widget getAppBottomView(UserProvider user) {
     return Container(
@@ -195,7 +200,7 @@ class MainViewChildState extends State<MainViewChild> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    Provider.of<MainViewVModel>(context)
+                    Provider.of<MainViewModel>(context)
                         .usersById[recordPayment.payerId]!
                         .username,
                     style: const TextStyle(
@@ -233,13 +238,12 @@ class MainViewChildState extends State<MainViewChild> {
                 height: 90,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 5, // Set the number of buttons
+                  itemCount: 5,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          // Add your button action here
                           print('Button $index pressed');
                         },
                         child: Column(
@@ -267,73 +271,61 @@ class MainViewChildState extends State<MainViewChild> {
                 )),
           ),
           Expanded(
-            child: Selector<MainViewVModel,List<RecordPayment>>(
-                selector: (context,myModel)=>myModel.records,
+            child: Selector<MainViewModel, List<RecordPayment>>(
+                selector: (context, myModel) => myModel.records,
                 builder: (context, records, child) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      height: 350,
-                      margin: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white70,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: records.isNotEmpty
-                                ? records.length
-                                : 1,
-                            itemExtent: 70,
-                            itemBuilder: (context, index) {
-                              return records.isEmpty
-                                  ? null
-                                  : record(records[index]);
-                            },
-                          )),
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 350,
+                          margin: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount:
+                                    records.isNotEmpty ? records.length : 1,
+                                itemExtent: 70,
+                                itemBuilder: (context, index) {
+                                  return records.isEmpty
+                                      ? null
+                                      : record(records[index]);
+                                },
+                              )),
+                        ),
+                        const TextButton(
+                            onPressed: null, child: Text('Xem them')),
+                      ],
                     ),
-                    const TextButton(onPressed: null, child: Text('Xem them')),
-                  ],
-                ),
-              );
-            }),
+                  );
+                }),
           )
         ],
       ),
     );
   }
 
-  Future<void> defineState() async {
-    Provider.of<MainViewVModel>(context, listen: false).user =
-        UserProvider.toUser(Provider.of<UserProvider>(context, listen: false));
-    if (await Provider.of<MainViewVModel>(context, listen: false)
-        .isUserHasHouse() ==
-        false) {
-      if (!context.mounted) return;
-      await Provider.of<MainViewVModel>(context, listen: false)
-          .createHouse('My house', '');
-    }
-    if (!context.mounted) return;
-    await Provider.of<MainViewVModel>(context, listen: false).getHouse();
-    if (!context.mounted) return;
-    Provider.of<MainViewVModel>(context, listen: false).house =
-        Provider.of<MainViewVModel>(context, listen: false).houses.first;
-    Provider.of<MainViewVModel>(context, listen: false).updateUsers();
-    await Provider.of<MainViewVModel>(context, listen: false)
-        .getAllRecordsByUsersAndHouse();
-
-
-    isLoaded = true;
-    Future.delayed(const Duration(seconds: 5));
-    setState(() {});
+  Future<void> initialModel() async {
+    await Provider.of<MainViewModel>(context, listen: false).initial();
   }
 
   @override
   void initState() {
     super.initState();
-    defineState();
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    initialModel();
+    // });
   }
+
+// @override
+// void didChangeDependencies() {
+//   initialModel().whenComplete(() => debugPrint("2OKKKKKKKKKKKKKKKKKKKKKKKK"));
+//   super.didChangeDependencies();
+//
+// }
 }

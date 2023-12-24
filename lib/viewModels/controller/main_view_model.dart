@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:untitled1/models/house.dart';
+import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/models/record.dart';
+import 'package:untitled1/repository/group_repository.dart';
 
 import 'package:untitled1/repository/house_repository.dart';
 
@@ -12,23 +14,29 @@ import '../../models/user_house.dart';
 import '../../repository/record_repository.dart';
 
 
-class MainViewVModel extends ChangeNotifier {
+class MainViewModel extends ChangeNotifier {
   final _recordRepository = RecordRepository();
   final _houseRepository = HouseRepository();
-  late User user;
+  final _groupRepository = GroupRepository();
+  User user;
+
+  MainViewModel(this.user);
+  List<PaymentGroup> groups = [];
   List<User> users = [];
   Map<int,User> usersById ={};
    List<RecordPayment> records = [];
   List<House> houses= [];
-  House _house = House(
+  late House _house = House(
       id: '',
-      name: 'My House',
+      name: 'Loading',
       information: '',
       role: true,
       date: '06/12/2023');
-  set house(House value) {
+  Future<void> updateHouse(House value) async {
     _house = value;
-
+    await updateUsers();
+    await getGroups();
+    await getAllRecordsByUsersAndHouse();
   }
   Future<void> updateUsers() async{
     usersById.clear();
@@ -40,15 +48,20 @@ class MainViewVModel extends ChangeNotifier {
   }
   House get house => _house;
   //house
-  Future<bool> isUserHasHouse() async {
-    return await _houseRepository.isUserHasHouse(user.id);
+  Future<void> initial() async {
+    if(!await _houseRepository.isUserHasHouse(user.id)){
+      createHouse('My house', '');
+    } else {
+      await getHouses();
+    }
+    await updateHouse(houses.first);
   }
   Future<dynamic> joinHouse(bool role, String id) async {
     await _houseRepository.joinHouse(
         UserHouse(user.id, id, role), id,user.id);
-    await getHouse();
+    await getHouses();
   }
-  Future<dynamic> getHouse() async {
+  Future<dynamic> getHouses() async {
     List<dynamic> jsonList = await _houseRepository.getHouseApi(user.email);
    houses = jsonList.map((jsonObject) => House.fromJson(jsonObject)).toList();
     notifyListeners();
@@ -74,6 +87,14 @@ class MainViewVModel extends ChangeNotifier {
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     return String.fromCharCodes(Iterable.generate(
         length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+  //group
+  Future<void> getGroups() async{
+    List<dynamic> jsonList;
+
+    jsonList =  await _groupRepository.getGroupByUserAndHouseApi(house.id,user.id);
+    groups = jsonList.map((jsonObject) => PaymentGroup.fromJson(jsonObject)).toList();
+
   }
 //record
   Future<dynamic> getAllRecordsByUsersAndHouse() async{
@@ -117,7 +138,7 @@ class MainViewVModel extends ChangeNotifier {
 
   }
   Future<dynamic> createRecord(var data) async{
-    List<dynamic> response = await _recordRepository.createRecordApi(data);
-    records = response.map((jsonObject) => RecordPayment.fromJson(jsonObject)).toList();
+    await _recordRepository.createRecordApi(data);
+    getAllRecordsByUsersAndHouse();
   }
 }

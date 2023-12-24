@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled1/views/main_view/main_view.dart';
 
 import '../providers/user_provider.dart';
-import '../viewmodels/controller/login_view_model.dart';
+import '../viewModels/controller/login_view_model.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -43,14 +44,14 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    LoginViewModel loginModelView = LoginViewModel();
+    LoginViewModel loginViewModel = LoginViewModel();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextFormField(
-            onChanged: (value) => loginModelView.updateEmail(value),
+            onChanged: (value) => loginViewModel.updateEmail(value),
             decoration: const InputDecoration(
                 icon: Icon(Icons.email),
                 hintText: 'example@gmail.com',
@@ -60,7 +61,7 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
             height: 20,
           ),
           TextFormField(
-            onChanged: (value) => loginModelView.updatePassword(value),
+            onChanged: (value) => loginViewModel.updatePassword(value),
             obscureText: true,
             decoration: const InputDecoration(
                 icon: Icon(Icons.password), labelText: 'Password *'),
@@ -77,10 +78,10 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
                     backgroundColor: Colors.blue,
                   ),
                   onPressed: () async {
-                    if (await loginModelView.condition()) {
+                    if (await loginViewModel.condition()) {
                       if (!context.mounted) return;
-                      await loginModelView.getUser();
-                     userProvider.setUser(loginModelView.user);
+                      await loginViewModel.getUser();
+                     userProvider.setUser(loginViewModel.user);
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
                       if (!context.mounted) return;

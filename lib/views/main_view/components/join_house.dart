@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../../viewmodels/controller/main_view_vm.dart';
+import '../../../viewModels/controller/main_view_model.dart';
+
+
+
 
 class JoinHouse extends StatelessWidget {
-  final MainViewVModel mainViewVModel;
+  const JoinHouse({super.key, required this.mainViewModel});
+  final MainViewModel mainViewModel;
 
-
-  const JoinHouse({Key? key, required this.mainViewVModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class JoinHouse extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (code.value.text != '') {
-                   mainViewVModel.joinHouse(false, code.value.text);
+                   Provider.of<MainViewModel>(context,listen: false).joinHouse(false, code.value.text);
                   }
                   Navigator.pop(context);
                 },

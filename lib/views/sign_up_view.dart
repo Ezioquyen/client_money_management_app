@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../viewmodels/controller/sign_up_viewmodel.dart';
+import '../viewModels/controller/sign_up_view_model.dart';
 
 class SignUpView extends StatelessWidget {
   const SignUpView({super.key});

@@ -34,7 +34,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(useMaterial3: true),
       home: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(

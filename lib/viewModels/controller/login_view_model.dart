@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import '../../models/user/user.dart';
 
 import '../../repository/login_repository.dart';
@@ -13,8 +7,6 @@ class LoginViewModel {
   late User user;
   String email = 'example@gmail.com';
   String password = '*****';
-
-
 
   void updateEmail(String value) {
     email = value;
@@ -28,8 +20,8 @@ class LoginViewModel {
     return (await _api.emailCheckApi(email) &&
         await _api.passwordCheckApi(email, password));
   }
-  Future<dynamic> getUser() async{
+
+  Future<dynamic> getUser() async {
     user = User.fromJson(await _api.loginApi(email));
   }
-
 }

@@ -1,15 +1,16 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
-import '../../../viewmodels/controller/main_view_vm.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../viewModels/controller/main_view_model.dart';
+
 
 
 
 class CreateHouse extends StatelessWidget {
-  final MainViewVModel mainViewVModel;
+  final MainViewModel mainViewModel;
+  const CreateHouse({super.key, required this.mainViewModel});
 
-
-  const CreateHouse({Key? key, required this.mainViewVModel}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     TextEditingController name = TextEditingController();
@@ -42,7 +43,7 @@ class CreateHouse extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (name.value.text != '') {
-                    mainViewVModel.createHouse(name.value.text, information.value.text);
+                   Provider.of<MainViewModel>(context).createHouse(name.value.text, information.value.text);
                   }
                   Navigator.pop(context);
                 },

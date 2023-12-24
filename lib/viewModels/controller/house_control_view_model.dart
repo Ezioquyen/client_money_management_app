@@ -26,7 +26,7 @@ class HouseControlViewModel extends ChangeNotifier{
   Future<void> getGroups() async{
     List<dynamic> jsonList;
 
-    jsonList =house.role? await _groupRepository.getGroupByHouseApi(house.id): await _groupRepository.getGroupByUserAndHouseApi(house.id,user.id);
+    jsonList = house.role? await _groupRepository.getGroupByHouseApi(house.id): await _groupRepository.getGroupByUserAndHouseApi(house.id,user.id);
    groups = jsonList.map((jsonObject) => PaymentGroup.fromJson(jsonObject)).toList();
 
   }

@@ -3,24 +3,47 @@ import 'package:provider/provider.dart';
 import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/models/user/user.dart';
 
-import 'package:untitled1/viewmodels/controller/house_control_view_model.dart';
-import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
+import 'package:untitled1/viewModels/controller/house_control_view_model.dart';
+import 'package:untitled1/viewModels/controller/main_view_model.dart';
 
+import '../../models/house.dart';
 import 'member_group.dart';
 
 class HouseControlView extends StatelessWidget {
-  final MainViewVModel mainViewVModel;
+  final MainViewModel mainViewModel;
 
-  const HouseControlView({Key? key, required this.mainViewVModel})
+  const HouseControlView({Key? key, required this.mainViewModel})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => HouseControlViewModel(mainViewVModel.users,mainViewVModel.house,mainViewVModel.user),
+      create: (context) => HouseControlViewModel(
+          mainViewModel.users, mainViewModel.house, mainViewModel.user),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(mainViewVModel.house.name),
+          title: Text(mainViewModel.house.name),
+          actions: mainViewModel.house.role
+              ? [
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (c) =>
+                                SettingView(house: mainViewModel.house),
+                          ));
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.settings,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ]
+              : null,
         ),
         body: const HouseControlBodyWidget(),
       ),
@@ -49,17 +72,13 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
             data: ProgressIndicatorThemeData(
               color: Colors.red,
             ),
-            child:Center(child: CircularProgressIndicator()))
+            child: Center(child: CircularProgressIndicator()))
         : Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Center(
                   child: SegmentedButton<MemberGroup>(
-                    style: const ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll<Color>(Colors.blueAccent),
-                    ),
                     segments: const <ButtonSegment<MemberGroup>>[
                       ButtonSegment<MemberGroup>(
                           value: MemberGroup.member,
@@ -106,10 +125,16 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
                               ),
                   );
                 }),
-                const TextButton(onPressed: null, child: Text('Add')),
+                _widgetHandle(houseControlViewModel.house.role),
               ],
             ),
           );
+  }
+
+  Widget _widgetHandle(bool role) {
+    return role
+        ? const TextButton(onPressed: null, child: Text('Add'))
+        : Container();
   }
 
   Widget userBar(User user) {
@@ -160,16 +185,19 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
       child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-              margin:  const EdgeInsets.only(left: 20,top: 20),
-              child: Text(paymentGroup.name,
+              margin: const EdgeInsets.only(left: 20, top: 20),
+              child: Text(
+                paymentGroup.name,
                 style: const TextStyle(
                   fontSize: 16,
-                ),))),
+                ),
+              ))),
     );
   }
-  Future<void> defineState() async {
 
-    await Provider.of<HouseControlViewModel>(context,listen: false).getGroups();
+  Future<void> defineState() async {
+    await Provider.of<HouseControlViewModel>(context, listen: false)
+        .getGroups();
     isLoaded = true;
     Future.delayed(const Duration(seconds: 5));
     setState(() {});
@@ -179,5 +207,40 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
   void initState() {
     super.initState();
     defineState();
+  }
+}
+
+class SettingView extends StatelessWidget {
+  final House house;
+
+  const SettingView({Key? key, required this.house}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Setting'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                    children: [
+                  const Text('Code: ',style: TextStyle(fontSize: 32)),
+                  Text(
+                    house.id,
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                ]),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

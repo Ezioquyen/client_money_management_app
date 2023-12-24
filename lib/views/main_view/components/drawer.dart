@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled1/viewmodels/controller/main_view_vm.dart';
+
 
 import '../../../main.dart';
 
 import '../../../models/house.dart';
 import '../../../providers/user_provider.dart';
+import '../../../viewModels/controller/main_view_model.dart';
 import 'create_house.dart';
 import 'join_house.dart';
 
@@ -15,9 +16,9 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MainViewVModel mainViewVModel = Provider.of<MainViewVModel>(context);
+    MainViewModel mainViewModel = Provider.of<MainViewModel>(context);
     return Drawer(
-      child: Container(
+      child: SizedBox(
         height: 500,
         child: ListView(
           padding: EdgeInsets.zero,
@@ -48,11 +49,12 @@ class MyDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            Selector<MainViewVModel,List<House>>(
-               selector: (context,myProvider)=>myProvider.houses,
+            Selector<MainViewModel,List<House>>(
+               selector: (context,myProvider) => myProvider.houses,
               builder: (BuildContext context, houses,
                   child) {
-                return Container(
+
+                return SizedBox(
                     height: houses.isNotEmpty
                         ? houses.length * 50
                         : 50,
@@ -67,16 +69,11 @@ class MyDrawer extends StatelessWidget {
                             ? null
                             : ListTile(
                                 onTap: () async {
-                                  mainViewVModel.house = houses[index];
-                                  await mainViewVModel.updateUsers();
-                                  if (!context.mounted) return;
-                                  await mainViewVModel
-                                      .getAllRecordsByUsersAndHouse();
-                                  if (!context.mounted) return;
+                                  mainViewModel.updateHouse(houses[index]);
                                   Navigator.pop(context);
                                 },
                                 leading: const Icon(Icons.house),
-                                title: Text(mainViewVModel.houses[index].name),
+                                title: Text(mainViewModel.houses[index].name),
                               );
                       },
                     ));
@@ -86,13 +83,11 @@ class MyDrawer extends StatelessWidget {
               leading: const Icon(Icons.supervised_user_circle),
               title: const Text('Join'),
               onTap: () {
-                Navigator.pop(context);
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return JoinHouse(
-                      mainViewVModel: mainViewVModel,
+                    return  JoinHouse(mainViewModel: mainViewModel,
                     );
                   },
                 );
@@ -102,13 +97,11 @@ class MyDrawer extends StatelessWidget {
               leading: const Icon(Icons.add_circle_outline),
               title: const Text('Create new house'),
               onTap: () {
-                Navigator.pop(context);
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return CreateHouse(
-                      mainViewVModel: mainViewVModel,
+                    return CreateHouse(mainViewModel: mainViewModel,
                     );
                   },
                 );
