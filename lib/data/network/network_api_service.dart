@@ -34,7 +34,16 @@ class NetworkApiService extends BaseApiService {
       throw InternetExceptions('Hello Quyen,error is here');
     }
   }
+  @override
+  Future<dynamic> putApi(var data, String url) async {
+    try {
+      Map<String, String> headers = {"Content-type": "application/json; charset=utf-8"};
+      await http.put(Uri.parse(url), body: json.encode(data), headers: headers).timeout(const Duration(seconds: 60));
 
+    } on SocketException {
+      throw InternetExceptions('Hello Quyen, error is here');
+    }
+  }
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:

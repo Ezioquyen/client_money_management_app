@@ -1,6 +1,6 @@
-import '../../models/user/user.dart';
+import '../models/user/user.dart';
 
-import '../../repository/login_repository.dart';
+import '../repository/login_repository.dart';
 
 class LoginViewModel {
   final _api = LoginRepository();

@@ -7,7 +7,8 @@ import '../../../main.dart';
 
 import '../../../models/house.dart';
 import '../../../providers/user_provider.dart';
-import '../../../viewModels/controller/main_view_model.dart';
+
+import '../../../viewModels/main_view_model.dart';
 import 'create_house.dart';
 import 'join_house.dart';
 
@@ -81,13 +82,13 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.supervised_user_circle),
-              title: const Text('Join'),
+              title: const Text('Tham gia nhà ở'),
               onTap: () {
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return  JoinHouse(mainViewModel: mainViewModel,
+                    return  JoinHouse(
                     );
                   },
                 );
@@ -95,13 +96,13 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Create new house'),
+              title: const Text('Tạo thêm nhà ở'),
               onTap: () {
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return CreateHouse(mainViewModel: mainViewModel,
+                    return const CreateHouse(
                     );
                   },
                 );
@@ -109,7 +110,7 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
                 leading: const Icon(Icons.logout),
-                title: const Text('Log out'),
+                title: const Text('Đăng xuất'),
                 onTap: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();

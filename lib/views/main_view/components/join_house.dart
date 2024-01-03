@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../viewModels/controller/main_view_model.dart';
+import '../../../viewModels/main_view_model.dart';
+
+
 
 
 
 
 class JoinHouse extends StatelessWidget {
-  const JoinHouse({super.key, required this.mainViewModel});
-  final MainViewModel mainViewModel;
 
 
   @override
@@ -23,30 +23,32 @@ class JoinHouse extends StatelessWidget {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: code,
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.tag), hintText: 'Code'),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (code.value.text != '') {
-                   Provider.of<MainViewModel>(context,listen: false).joinHouse(false, code.value.text);
-                  }
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Join',
-                  style: TextStyle(color: Colors.white),
-                ),
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: code,
+                decoration: const InputDecoration(
+                    icon: Icon(Icons.tag), hintText: 'Code'),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (code.value.text != '') {
+                     Provider.of<MainViewModel>(context,listen: false).joinHouse(false, code.value.text);
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Join',
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

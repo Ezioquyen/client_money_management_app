@@ -3,20 +3,18 @@ import 'package:provider/provider.dart';
 import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/models/user/user.dart';
 
-import 'package:untitled1/viewModels/controller/house_control_view_model.dart';
-import 'package:untitled1/viewModels/controller/main_view_model.dart';
+import 'package:untitled1/viewModels/house_control_view_model.dart';
+
 
 import '../../models/house.dart';
+import '../../viewModels/main_view_model.dart';
 import 'member_group.dart';
 
 class HouseControlView extends StatelessWidget {
-  final MainViewModel mainViewModel;
-
-  const HouseControlView({Key? key, required this.mainViewModel})
-      : super(key: key);
-
+  const HouseControlView({super.key});
   @override
   Widget build(BuildContext context) {
+    MainViewModel mainViewModel = Provider.of<MainViewModel>(context,listen: false);
     return ChangeNotifierProvider(
       create: (context) => HouseControlViewModel(
           mainViewModel.users, mainViewModel.house, mainViewModel.user),
@@ -61,19 +59,12 @@ class HouseControlBodyWidget extends StatefulWidget {
 }
 
 class HomeControlBodyState extends State<HouseControlBodyWidget> {
-  bool isLoaded = false;
 
   @override
   Widget build(BuildContext context) {
     HouseControlViewModel houseControlViewModel =
         Provider.of<HouseControlViewModel>(context);
-    return !isLoaded
-        ? const ProgressIndicatorTheme(
-            data: ProgressIndicatorThemeData(
-              color: Colors.red,
-            ),
-            child: Center(child: CircularProgressIndicator()))
-        : Padding(
+    return  Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
@@ -82,11 +73,11 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
                     segments: const <ButtonSegment<MemberGroup>>[
                       ButtonSegment<MemberGroup>(
                           value: MemberGroup.member,
-                          label: Text('Members'),
+                          label: Text('Thành viên'),
                           icon: Icon(Icons.person)),
                       ButtonSegment<MemberGroup>(
                           value: MemberGroup.group,
-                          label: Text('Groups'),
+                          label: Text('Nhóm'),
                           icon: Icon(Icons.group)),
                     ],
                     selected: <MemberGroup>{houseControlViewModel.memberGroup},
@@ -133,7 +124,7 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
 
   Widget _widgetHandle(bool role) {
     return role
-        ? const TextButton(onPressed: null, child: Text('Add'))
+        ? const TextButton(onPressed: null, child: Text('Thêm'))
         : Container();
   }
 
@@ -157,10 +148,10 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
                 children: [
                   Text(
                     user.username,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.blueAccent),
+                        color: Colors.deepPurple[600]),
                   ),
                   Text(
                     user.email,
@@ -198,9 +189,6 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
   Future<void> defineState() async {
     await Provider.of<HouseControlViewModel>(context, listen: false)
         .getGroups();
-    isLoaded = true;
-    Future.delayed(const Duration(seconds: 5));
-    setState(() {});
   }
 
   @override

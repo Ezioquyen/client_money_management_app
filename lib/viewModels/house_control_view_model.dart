@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/repository/group_repository.dart';
 
-import '../../models/house.dart';
-import '../../models/user/user.dart';
-import '../../views/houseControl/member_group.dart';
+import '../models/house.dart';
+import '../models/user/user.dart';
+import '../views/houseControl/member_group.dart';
 
 class HouseControlViewModel extends ChangeNotifier{
   final _groupRepository = GroupRepository();

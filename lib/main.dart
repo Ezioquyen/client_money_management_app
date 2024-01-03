@@ -1,21 +1,34 @@
+
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled1/data/firebase_api.dart';
 import 'package:untitled1/providers/user_provider.dart';
+import 'package:untitled1/theme.dart';
+import 'package:untitled1/viewModels/main_view_model.dart';
 import 'package:untitled1/views/login_view.dart';
 import 'package:untitled1/views/main_view/main_view.dart';
 import 'package:untitled1/views/sign_up_view.dart';
 
-void main() {
-  runApp(MultiProvider(
-    providers: [
-      Provider<UserProvider>.value(
-        value:
-            UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
-      ),
-    ],
-    child: const MyApp(),
-  ));
+import 'firebase_options.dart';
+
+Future<void> handleMessage(RemoteMessage message) async{
+  print('${message.notification?.title}');
+  print('${message.notification?.body}');
+  print('${message.data}');
+}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  await FireBaseApi().initNotification();
+  FirebaseMessaging.onMessage.listen(handleMessage);
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -32,17 +45,28 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter demo',
-      theme: ThemeData(useMaterial3: true),
-      home: Container(
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/background.png'),
-                fit: BoxFit.cover)),
-        child: Scaffold(backgroundColor: Colors.transparent, body: view),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) =>
+          MainViewModel()
+        ),
+        Provider<UserProvider>.value(
+          value:
+          UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter demo',
+        theme: MaterialTheme(GoogleFonts.robotoTextTheme()).light(),
+        home: Container(
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'),
+                  fit: BoxFit.cover)),
+          child: Scaffold(backgroundColor: Colors.transparent, body: view),
+        ),
       ),
-    );
+    ) ;
   }
 
   Future<void> checkLoginStatus() async {
@@ -77,7 +101,7 @@ class HomeView extends StatelessWidget {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const Text('Welcome'),
+        title: const Center(child: Text('WELCOME')),
       ),
       body: _HomeViewBody(),
     );
@@ -88,7 +112,7 @@ class _HomeViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(20.0),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +124,9 @@ class _HomeViewBody extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const LoginPage()));
                 },
-                child: const Text('Login')),
+                child: const Text('ĐĂNG NHẬP',style: TextStyle(
+                  fontSize: 20,
+                ),)),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -108,7 +134,9 @@ class _HomeViewBody extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const SignUpView()));
                 },
-                child: const Text('SignUp'))
+                child: const Text('ĐĂNG KÝ',style: TextStyle(
+                  fontSize: 20,
+                ),))
           ],
         ),
       ),
