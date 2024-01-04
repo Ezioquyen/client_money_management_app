@@ -6,6 +6,7 @@ import 'package:untitled1/models/record.dart';
 
 import 'package:untitled1/views/houseControl/house_control_view.dart';
 import 'package:untitled1/views/main_view/components/record_view.dart';
+import 'package:untitled1/views/notification_view.dart';
 import 'package:untitled1/views/recordManagement/record_management_view.dart';
 import '../../models/house.dart';
 import '../../providers/user_provider.dart';
@@ -18,15 +19,12 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MainViewModel(),
-      child: Container(
+    return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/images/background.png'),
                 fit: BoxFit.cover)),
         child: const MainViewChild(),
-      ),
     );
   }
 }
@@ -46,7 +44,7 @@ class MainViewChildState extends State<MainViewChild> {
     return Scaffold(
       backgroundColor: Colors.black12,
       drawer: const MyDrawer(),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: SizedBox(
         height: 60,
         child: BottomAppBar(
           shape: const CircularNotchedRectangle(),
@@ -121,7 +119,7 @@ class MainViewChildState extends State<MainViewChild> {
                 )),
         actions: [
           InkWell(
-            onTap: () {},
+            onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>const NotificationView()));},
             child: const Padding(
               padding: EdgeInsets.all(8.0),
               child: Icon(
@@ -195,39 +193,37 @@ class MainViewChildState extends State<MainViewChild> {
             backgroundColor: Colors.white,
             child: Icon(Icons.person_outline_rounded),
           ),
-          SizedBox(
+          const SizedBox(
             width: 4,
           ),
-          Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  Provider.of<MainViewModel>(context)
-                      .usersById[recordPayment.payerId]!
-                      .username,
-                  style: TextStyle(fontSize: 20, color: Colors.deepPurple[600]),
-                ),
-                Text(
-                  recordPayment.information,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      recordPayment.date.toString(),
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
-                    ),
-                    Text(
-                      '| ${NumberFormat('###,###').format(recordPayment.money)}đ',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w200, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                Provider.of<MainViewModel>(context)
+                    .usersById[recordPayment.payerId]!
+                    .username,
+                style: TextStyle(fontSize: 20, color: Colors.deepPurple[600]),
+              ),
+              Text(
+                recordPayment.information,
+              ),
+              Row(
+                children: [
+                  Text(
+                    recordPayment.date.toString(),
+                    style:
+                        const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+                  ),
+                  Text(
+                    '| ${NumberFormat('###,###').format(recordPayment.money)}đ',
+                    style:
+                        const TextStyle(fontWeight: FontWeight.w200, fontSize: 13),
+                  ),
+                ],
+              ),
+            ],
           )
         ],
       ),
@@ -352,9 +348,7 @@ class MainViewChildState extends State<MainViewChild> {
                                         records.length < 6 ? records.length : 5,
                                     itemExtent: 80,
                                     itemBuilder: (context, index) {
-                                      return records.isEmpty
-                                          ? null
-                                          : ListTile(
+                                      return ListTile(
                                               onTap: () {
                                                 showModalBottomSheet(
                                                     builder: (BuildContext

@@ -6,9 +6,11 @@ import 'package:untitled1/models/record.dart';
 import 'package:untitled1/views/houseControl/member_group.dart';
 
 import '../models/user/user.dart';
+import '../repository/notification_repository.dart';
 import 'main_view_model.dart';
 
 class RecordViewModel extends ChangeNotifier {
+  final _notificationRepository = NotificationRepository();
   bool payerChecker = false;
   late DateTime dateTime;
   MainViewModel mainViewModel;
@@ -69,6 +71,8 @@ class RecordViewModel extends ChangeNotifier {
   }
 
   Future<void> createRecord() async {
+
+
     recordPayment.date = DateFormat('y-M-d').format(dateTime);
     switch (memberGroup) {
       case MemberGroup.member:
@@ -93,10 +97,36 @@ class RecordViewModel extends ChangeNotifier {
         }
     }
     recordPayment.participantIds.add(recordPayment.payerId);
+    List<int> receiveNotifyList = [...recordPayment.participantIds];
+    receiveNotifyList.removeWhere((element) => element==recordPayment.payerId);
     if(recordPayment.id==0) {
       await mainViewModel.createRecord(recordPayment.toJson());
+      await _notificationRepository.createNotification({
+
+          "deepLink": "record/show",
+          "title": "Ghi chép được tạo từ nhà trọ ${mainViewModel.house.name}",
+          "name": "RecordCreated",
+          "isRead": false,
+          "time": DateFormat("s:m:H dd/MM/yyyy").format(DateTime.now()).toString(),
+          "notificationText":"Bản ghi chép chi tiêu được tạo bởi ${mainViewModel.usersById[recordPayment.payerId]?.username}",
+          "userIds": receiveNotifyList
+
+      });
     } else {
       await mainViewModel.saveRecord(recordPayment.toJson(),recordPayment.id);
+      print(receiveNotifyList);
+      await _notificationRepository.createNotification({
+
+
+      "deepLink": "record/show",
+      "title": "Ghi chép được sửa từ nhà trọ ${mainViewModel.house.name}",
+      "name": "RecordCreated",
+      "isRead": false,
+      "time": DateFormat("s:m:H dd/MM/yyyy").format(DateTime.now()).toString(),
+      "notificationText":"Bản ghi chép chi tiêu được sửa bởi ${mainViewModel.usersById[recordPayment.payerId]?.username}",
+      "userIds": receiveNotifyList
+
+      });
     }
   }
 }

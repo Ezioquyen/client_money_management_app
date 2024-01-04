@@ -36,6 +36,7 @@ class JoinHouse extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
+                  style: const ButtonStyle(backgroundColor:  MaterialStatePropertyAll<Color>(Colors.purple)),
                   onPressed: () {
                     if (code.value.text != '') {
                      Provider.of<MainViewModel>(context,listen: false).joinHouse(false, code.value.text);
@@ -44,6 +45,7 @@ class JoinHouse extends StatelessWidget {
                   },
                   child: const Text(
                     'Join',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               )

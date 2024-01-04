@@ -44,6 +44,7 @@ class CreateHouse extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
+                  style: const ButtonStyle(backgroundColor:  MaterialStatePropertyAll<Color>(Colors.purple)),
                   onPressed: () {
                     if (name.value.text != '') {
                      Provider.of<MainViewModel>(context).createHouse(name.value.text, information.value.text);
@@ -52,6 +53,7 @@ class CreateHouse extends StatelessWidget {
                   },
                   child: const Text(
                     'Create',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               )

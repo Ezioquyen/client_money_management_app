@@ -11,8 +11,10 @@ import 'package:untitled1/viewModels/mixins/record_mixins.dart';
 
 import '../models/user/user.dart';
 import '../models/user_house.dart';
+import '../repository/notification_repository.dart';
 
 class MainViewModel extends ChangeNotifier with RecordMixin{
+
 
   final _houseRepository = HouseRepository();
   final _groupRepository = GroupRepository();
@@ -21,7 +23,9 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
   Map<int, User> usersById = {};
   List<House> houses = [];
   Future<void> updateHouse(House value) async {
+    usersById.clear();
     house = value;
+    records=[];
     await updateUsers();
     await getGroups();
     dateList = await recordRepository.getDateOfRecordsApi(house.id);
@@ -33,7 +37,6 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
     notifyListeners();
   }
   Future<void> updateUsers() async {
-    usersById.clear();
     List<dynamic> jsonList =
         await _houseRepository.getUsersByHouseApi(house.id);
     users = jsonList.map((jsonObject) => User.fromJson(jsonObject)).toList();

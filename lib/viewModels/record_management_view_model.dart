@@ -122,7 +122,7 @@ class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
 
   Future<dynamic> getRecordsByPayerAndHouse() async {
     List<dynamic> response =
-    await recordRepository.getAllRecordsByPayerAndHouseApi(
+    await recordRepository.getRecordsByPayerAndHouseApi(
         house.id,
         user.id,
         selectedDate.toString().split("/")[1],

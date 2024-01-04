@@ -5,22 +5,27 @@ import 'package:untitled1/models/user/user.dart';
 
 import 'package:untitled1/viewModels/house_control_view_model.dart';
 
-
 import '../../models/house.dart';
 import '../../viewModels/main_view_model.dart';
 import 'member_group.dart';
 
 class HouseControlView extends StatelessWidget {
   const HouseControlView({super.key});
+
   @override
   Widget build(BuildContext context) {
-    MainViewModel mainViewModel = Provider.of<MainViewModel>(context,listen: false);
+    MainViewModel mainViewModel =
+        Provider.of<MainViewModel>(context, listen: false);
     return ChangeNotifierProvider(
       create: (context) => HouseControlViewModel(
           mainViewModel.users, mainViewModel.house, mainViewModel.user),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(mainViewModel.house.name),
+          backgroundColor: Colors.deepPurple[400],
+          title: Text(
+            mainViewModel.house.name,
+            style: const TextStyle(color: Colors.white),
+          ),
           actions: mainViewModel.house.role
               ? [
                   InkWell(
@@ -59,67 +64,61 @@ class HouseControlBodyWidget extends StatefulWidget {
 }
 
 class HomeControlBodyState extends State<HouseControlBodyWidget> {
-
   @override
   Widget build(BuildContext context) {
     HouseControlViewModel houseControlViewModel =
         Provider.of<HouseControlViewModel>(context);
-    return  Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Center(
-                  child: SegmentedButton<MemberGroup>(
-                    segments: const <ButtonSegment<MemberGroup>>[
-                      ButtonSegment<MemberGroup>(
-                          value: MemberGroup.member,
-                          label: Text('Thành viên'),
-                          icon: Icon(Icons.person)),
-                      ButtonSegment<MemberGroup>(
-                          value: MemberGroup.group,
-                          label: Text('Nhóm'),
-                          icon: Icon(Icons.group)),
-                    ],
-                    selected: <MemberGroup>{houseControlViewModel.memberGroup},
-                    onSelectionChanged: (Set<MemberGroup> newSelection) {
-                      houseControlViewModel.memberGroup = newSelection.first;
-                    },
-                  ),
-                ),
-                Consumer<HouseControlViewModel>(
-                    builder: (context, myModel, child) {
-                  return Container(
-                    height: 350,
-                    child:
-                        houseControlViewModel.memberGroup == MemberGroup.member
-                            ? ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: myModel.users.isNotEmpty
-                                    ? myModel.users.length
-                                    : 1,
-                                itemExtent: 70,
-                                itemBuilder: (context, index) {
-                                  return userBar(myModel.users[index]);
-                                },
-                              )
-                            : ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: myModel.groups.isNotEmpty
-                                    ? myModel.groups.length
-                                    : 1,
-                                itemExtent: 70,
-                                itemBuilder: (context, index) {
-                                  return myModel.groups.isNotEmpty
-                                      ? groupBar(myModel.groups[index])
-                                      : null;
-                                },
-                              ),
-                  );
-                }),
-                _widgetHandle(houseControlViewModel.house.role),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Center(
+            child: SegmentedButton<MemberGroup>(
+              segments: const <ButtonSegment<MemberGroup>>[
+                ButtonSegment<MemberGroup>(
+                    value: MemberGroup.member,
+                    label: Text('Thành viên'),
+                    icon: Icon(Icons.person)),
+                ButtonSegment<MemberGroup>(
+                    value: MemberGroup.group,
+                    label: Text('Nhóm'),
+                    icon: Icon(Icons.group)),
               ],
+              selected: <MemberGroup>{houseControlViewModel.memberGroup},
+              onSelectionChanged: (Set<MemberGroup> newSelection) {
+                houseControlViewModel.memberGroup = newSelection.first;
+              },
             ),
-          );
+          ),
+          Consumer<HouseControlViewModel>(builder: (context, myModel, child) {
+            return SizedBox(
+              height: 350,
+              child: houseControlViewModel.memberGroup == MemberGroup.member
+                  ? ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: myModel.users.length,
+                      itemExtent: 70,
+                      itemBuilder: (context, index) {
+                        return userBar(myModel.users[index]);
+                      },
+                    )
+                  : ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount:
+                          myModel.groups.isNotEmpty ? myModel.groups.length : 1,
+                      itemExtent: 70,
+                      itemBuilder: (context, index) {
+                        return myModel.groups.isNotEmpty
+                            ? groupBar(myModel.groups[index])
+                            : null;
+                      },
+                    ),
+            );
+          }),
+          _widgetHandle(houseControlViewModel.house.role),
+        ],
+      ),
+    );
   }
 
   Widget _widgetHandle(bool role) {
@@ -186,15 +185,9 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
     );
   }
 
-  Future<void> defineState() async {
-    await Provider.of<HouseControlViewModel>(context, listen: false)
-        .getGroups();
-  }
-
   @override
   void initState() {
     super.initState();
-    defineState();
   }
 }
 
@@ -216,9 +209,8 @@ class SettingView extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                    children: [
-                  const Text('Code: ',style: TextStyle(fontSize: 32)),
+                child: Row(children: [
+                  const Text('Code: ', style: TextStyle(fontSize: 32)),
                   Text(
                     house.id,
                     style: const TextStyle(fontSize: 32),

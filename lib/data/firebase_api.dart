@@ -1,9 +1,10 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FireBaseApi{
+  static late final String fCMToken;
   final _firebaseMessaging = FirebaseMessaging.instance;
   Future<void> initNotification() async{
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+     await _firebaseMessaging.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -12,7 +13,7 @@ class FireBaseApi{
       provisional: false,
       sound: true,
     );
-    final fCMToken = await _firebaseMessaging.getToken();
-    print(fCMToken);
+     fCMToken = (await _firebaseMessaging.getToken())!;
+
   }
 }

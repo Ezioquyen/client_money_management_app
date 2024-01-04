@@ -84,6 +84,7 @@ class MyDrawer extends StatelessWidget {
               leading: const Icon(Icons.supervised_user_circle),
               title: const Text('Tham gia nhà ở'),
               onTap: () {
+                Navigator.pop(context);
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
@@ -98,6 +99,7 @@ class MyDrawer extends StatelessWidget {
               leading: const Icon(Icons.add_circle_outline),
               title: const Text('Tạo thêm nhà ở'),
               onTap: () {
+                Navigator.pop(context);
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
@@ -112,6 +114,7 @@ class MyDrawer extends StatelessWidget {
                 leading: const Icon(Icons.logout),
                 title: const Text('Đăng xuất'),
                 onTap: () async {
+                 await Provider.of<UserProvider>(context, listen: false).removeUserDeviceToken();
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.setBool('isLoggedIn', false);

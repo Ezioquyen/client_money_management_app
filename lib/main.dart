@@ -16,19 +16,24 @@ import 'package:untitled1/views/main_view/main_view.dart';
 import 'package:untitled1/views/sign_up_view.dart';
 
 import 'firebase_options.dart';
-
-Future<void> handleMessage(RemoteMessage message) async{
-  print('${message.notification?.title}');
-  print('${message.notification?.body}');
-  print('${message.data}');
-}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   await FireBaseApi().initNotification();
-  FirebaseMessaging.onMessage.listen(handleMessage);
 
-  runApp(const MyApp());
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) =>
+          MainViewModel()
+      ),
+      Provider<UserProvider>.value(
+        value:
+        UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
+      ),
+    ],
+    child: const MyApp(),
+  ) );
 }
 
 class MyApp extends StatefulWidget {
@@ -45,28 +50,17 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) =>
-          MainViewModel()
-        ),
-        Provider<UserProvider>.value(
-          value:
-          UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter demo',
-        theme: MaterialTheme(GoogleFonts.robotoTextTheme()).light(),
-        home: Container(
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/background.png'),
-                  fit: BoxFit.cover)),
-          child: Scaffold(backgroundColor: Colors.transparent, body: view),
-        ),
+    return MaterialApp(
+      title: 'Flutter demo',
+      theme: MaterialTheme(GoogleFonts.robotoTextTheme()).light(),
+      home: Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/background.png'),
+                fit: BoxFit.cover)),
+        child: Scaffold(backgroundColor: Colors.transparent, body: view),
       ),
-    ) ;
+    );
   }
 
   Future<void> checkLoginStatus() async {

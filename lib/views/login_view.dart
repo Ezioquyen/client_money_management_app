@@ -96,10 +96,14 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
                       onPressed: () async {
                         if (await loginViewModel.condition()) {
                           if (!context.mounted) return;
+
                           await loginViewModel.getUser();
                           userProvider.setUser(loginViewModel.user);
+                          if (!context.mounted) return;
+                          await Provider.of<UserProvider>(context, listen: false).updateUserDeviceToken();
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
+
                           if (!context.mounted) return;
                           prefs.setString(
                               'username',
@@ -113,6 +117,7 @@ class _BodyWidgetState extends State<LoginPageBodyWidget> {
                                   .toString());
                           prefs.setString('email', userProvider.email);
                           prefs.setBool('isLoggedIn', true);
+
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(

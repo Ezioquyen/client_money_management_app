@@ -11,7 +11,7 @@ mixin RecordMixin{
   int debt = 0;
   final recordRepository = RecordRepository();
   User user = User(id: 0, username: 'user', email: 'example@gmail.com');
-  dynamic selectedDate;
+  dynamic selectedDate = "${DateTime.now().month}/${DateTime.now().year}";
   List<PaymentGroup> groups = [];
   late List<dynamic> dateList = [];
   List<RecordPayment> records = [];

@@ -36,6 +36,8 @@ class NetworkApiService extends BaseApiService {
   }
   @override
   Future<dynamic> putApi(var data, String url) async {
+    print("url: $url");
+    print("data: $data");
     try {
       Map<String, String> headers = {"Content-type": "application/json; charset=utf-8"};
       await http.put(Uri.parse(url), body: json.encode(data), headers: headers).timeout(const Duration(seconds: 60));
