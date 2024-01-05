@@ -15,4 +15,7 @@ class NotificationRepository{
   Future<dynamic> readNotification(int notificationId) async{
     return await _apiService.putApi(null,'${ApiUrl.notificationApi}/readNotification/$notificationId');
   }
+  Future<dynamic> readAllNotification(int userId) async{
+    return await _apiService.putApi(null,'${ApiUrl.notificationApi}/readAllNotification/$userId');
+  }
 }

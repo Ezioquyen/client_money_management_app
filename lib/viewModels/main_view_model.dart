@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:untitled1/models/house.dart';
 import 'package:untitled1/models/payment_group.dart';
@@ -13,29 +14,30 @@ import '../models/user/user.dart';
 import '../models/user_house.dart';
 import '../repository/notification_repository.dart';
 
-class MainViewModel extends ChangeNotifier with RecordMixin{
-
-
+class MainViewModel extends ChangeNotifier with RecordMixin {
+  final _notification = NotificationRepository();
   final _houseRepository = HouseRepository();
   final _groupRepository = GroupRepository();
-
+  int unreadNotify = 0;
   List<User> users = [];
   Map<int, User> usersById = {};
   List<House> houses = [];
+
   Future<void> updateHouse(House value) async {
     usersById.clear();
     house = value;
-    records=[];
+    records = [];
     await updateUsers();
     await getGroups();
     dateList = await recordRepository.getDateOfRecordsApi(house.id);
     if (dateList.isEmpty) {
-      await  updateDate("${DateTime.now().month}/${DateTime.now().year}");
+      await updateDate("${DateTime.now().month}/${DateTime.now().year}");
     } else {
       await updateDate(dateList[0]);
     }
     notifyListeners();
   }
+
   Future<void> updateUsers() async {
     List<dynamic> jsonList =
         await _houseRepository.getUsersByHouseApi(house.id);
@@ -44,6 +46,7 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
       usersById[user.id] = user;
     }
   }
+
   Future<void> initial(User user) async {
     this.user = user;
     if (!await _houseRepository.isUserHasHouse(user.id)) {
@@ -52,6 +55,10 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
       await getHouses();
     }
     await updateHouse(houses.first);
+    getUnreadNotify();
+    FirebaseMessaging.onMessage.listen((event) async {
+      await getUnreadNotify();
+    });
   }
 
   Future<dynamic> joinHouse(bool role, String id) async {
@@ -88,6 +95,7 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
     return String.fromCharCodes(Iterable.generate(
         length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
+
   Future<void> getGroups() async {
     List<dynamic> jsonList;
 
@@ -103,24 +111,45 @@ class MainViewModel extends ChangeNotifier with RecordMixin{
     await super.updateDate(date);
     notifyListeners();
   }
+
   @override
   Future<dynamic> saveRecord(var data, var id) async {
     await super.saveRecord(data, id);
     dateList = await recordRepository.getDateOfRecordsApi(house.id);
     if (dateList.isEmpty) {
-      await  updateDate("${DateTime.now().month}/${DateTime.now().year}");
+      await updateDate("${DateTime.now().month}/${DateTime.now().year}");
     } else {
       await updateDate(dateList[0]);
     }
   }
-  @override
-  Future<dynamic> createRecord(var data) async {
-    await super.createRecord(data);
-    dateList = await recordRepository.getDateOfRecordsApi(house.id);
-    if (dateList.isEmpty) {
-      await  updateDate("${DateTime.now().month}/${DateTime.now().year}");
-    } else {
-      await updateDate(dateList[0]);
-    }
+
+  Future<dynamic> getUnreadNotify() async {
+    unreadNotify = await _notification.getUnreadNotificationByUser(user.id);
+    print(unreadNotify);
+    notifyListeners();
+  }
+
+  Future<dynamic> getRecordById(String id) async {
+    return recordRepository.getRecordById(id);
+  }
+
+  void removeData() {
+    unreadNotify = 0;
+    users = [];
+    usersById = {};
+    houses = [];
+    paid = 0;
+    debt = 0;
+    user = User(id: 0, username: 'user', email: 'example@gmail.com');
+    selectedDate = "${DateTime.now().month}/${DateTime.now().year}";
+    groups = [];
+    dateList = [];
+    records = [];
+    house = House(
+        id: '',
+        name: 'Loading',
+        information: '',
+        role: true,
+        date: '06/12/2023');
   }
 }

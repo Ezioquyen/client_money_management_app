@@ -34,10 +34,6 @@ class RecordRepository{
     dynamic response = await _apiNetworkService.getApi("${ApiUrl.recordApi}/payer/house/$houseId/$payerId?year=$year&month=$month");
     return response;
   }
-  Future<dynamic> createRecordApi(var data) async{
-    dynamic response = await _apiNetworkService.postApi(data,"${ApiUrl.recordApi}/create");
-    return response;
-  }
   Future<dynamic> saveRecordApi(var data, var id) async{
     dynamic response = await _apiNetworkService.putApi(data,"${ApiUrl.recordApi}/save/$id");
     return response;
@@ -53,5 +49,8 @@ class RecordRepository{
   Future<dynamic> findDebtMoneyByDate(var userId, var houseId, var year, var month) async{
     dynamic response = await _apiNetworkService.getApi("${ApiUrl.recordApi}/debt/$houseId/$userId?year=$year&month=$month");
     return response;
+  }
+  Future<dynamic> getRecordById(String id)async{
+    return await _apiNetworkService.getApi("${ApiUrl.recordApi}/getById/$id");
   }
 }

@@ -1,5 +1,5 @@
 class RecordPayment{
-  int id = 0;
+  String id = '';
   int money;
   String date;
   String information;

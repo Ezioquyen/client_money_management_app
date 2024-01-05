@@ -114,11 +114,13 @@ class MyDrawer extends StatelessWidget {
                 leading: const Icon(Icons.logout),
                 title: const Text('Đăng xuất'),
                 onTap: () async {
+                  Provider.of<MainViewModel>(context, listen: false).removeData();
                  await Provider.of<UserProvider>(context, listen: false).removeUserDeviceToken();
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.setBool('isLoggedIn', false);
                   if (!context.mounted) return;
+
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const MyApp()),

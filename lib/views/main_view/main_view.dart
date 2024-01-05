@@ -3,10 +3,10 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled1/models/record.dart';
-
+import 'package:badges/badges.dart' as badges;
 import 'package:untitled1/views/houseControl/house_control_view.dart';
 import 'package:untitled1/views/main_view/components/record_view.dart';
-import 'package:untitled1/views/notification_view.dart';
+import 'package:untitled1/views/notification_view/notification_view.dart';
 import 'package:untitled1/views/recordManagement/record_management_view.dart';
 import '../../models/house.dart';
 import '../../providers/user_provider.dart';
@@ -20,11 +20,11 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/images/background.png'),
-                fit: BoxFit.cover)),
-        child: const MainViewChild(),
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/images/background.png'),
+              fit: BoxFit.cover)),
+      child: const MainViewChild(),
     );
   }
 }
@@ -81,7 +81,7 @@ class MainViewChildState extends State<MainViewChild> {
                         participantIds: [],
                         houseId: '',
                         paymentGroup: -1,
-                        id: 0,
+                        id: '',
                         money: 0,
                         date: '',
                         information: '',
@@ -118,15 +118,39 @@ class MainViewChildState extends State<MainViewChild> {
                   ),
                 )),
         actions: [
-          InkWell(
-            onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context)=>const NotificationView()));},
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.notifications,
-                size: 20,
-              ),
-            ),
+          Selector<MainViewModel, int>(
+            builder: (context, unreadNotify, child) {
+              return badges.Badge(
+                showBadge: unreadNotify!=0,
+                badgeStyle: badges.BadgeStyle(
+                  badgeColor: Colors.deepPurple,
+                  padding: const EdgeInsets.all(5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                position: badges.BadgePosition.topEnd(top: -5, end: 3),
+                badgeContent: Text(
+                        '$unreadNotify',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NotificationView()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.notifications,
+                      size: 25,
+                      color: unreadNotify == 0 ? Colors.black38 : Colors.white,
+                    ),
+                  ),
+                ),
+              );
+            },
+            selector: (context, myModel) => myModel.unreadNotify,
           ),
         ],
         bottom: PreferredSize(
@@ -213,13 +237,13 @@ class MainViewChildState extends State<MainViewChild> {
                 children: [
                   Text(
                     recordPayment.date.toString(),
-                    style:
-                        const TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400, fontSize: 13),
                   ),
                   Text(
-                    '| ${NumberFormat('###,###').format(recordPayment.money)}đ',
-                    style:
-                        const TextStyle(fontWeight: FontWeight.w200, fontSize: 13),
+                    ' | ${NumberFormat('###,###').format(recordPayment.money)}đ',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w200, fontSize: 13),
                   ),
                 ],
               ),
@@ -349,17 +373,17 @@ class MainViewChildState extends State<MainViewChild> {
                                     itemExtent: 80,
                                     itemBuilder: (context, index) {
                                       return ListTile(
-                                              onTap: () {
-                                                showModalBottomSheet(
-                                                    builder: (BuildContext
-                                                            builderContext) =>
-                                                        RecordView(
-                                                          recordPayment:
-                                                              records[index],
-                                                        ),
-                                                    context: context);
-                                              },
-                                              title: record(records[index]));
+                                          onTap: () {
+                                            showModalBottomSheet(
+                                                builder: (BuildContext
+                                                        builderContext) =>
+                                                    RecordView(
+                                                      recordPayment:
+                                                          records[index],
+                                                    ),
+                                                context: context);
+                                          },
+                                          title: record(records[index]));
                                     },
                                   ),
                                 );

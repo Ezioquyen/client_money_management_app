@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/models/record.dart';
+import 'package:untitled1/repository/house_repository.dart';
 
 import 'package:untitled1/views/houseControl/member_group.dart';
 
@@ -11,16 +12,19 @@ import 'main_view_model.dart';
 
 class RecordViewModel extends ChangeNotifier {
   final _notificationRepository = NotificationRepository();
+  final _houseRepository =HouseRepository();
   bool payerChecker = false;
   late DateTime dateTime;
   MainViewModel mainViewModel;
   List<User> users = [];
   late RecordPayment recordPayment;
+  late Set<int> receiveNotifyList = {};
   late MemberGroup memberGroup;
   PaymentGroup group = PaymentGroup(id: 0, name: '', houseId: '', userIds: []);
 
   RecordViewModel(this.mainViewModel, RecordPayment value) {
    recordPayment = RecordPayment(participantIds: value.participantIds, houseId: value.houseId, paymentGroup: value.paymentGroup, id: value.id, money: value.money, date: value.date, information: value.information, paid: value.paid, payerId: value.payerId);
+   receiveNotifyList.addAll(recordPayment.participantIds);
     if (recordPayment.paymentGroup == -1) {
       memberGroup = MemberGroup.member;
     } else if (recordPayment.paymentGroup == 0) {
@@ -31,25 +35,26 @@ class RecordViewModel extends ChangeNotifier {
       recordPayment.participantIds.clear();
       group = mainViewModel.groups.where((element) => element.id == recordPayment.paymentGroup).first;
     }
-    users = mainViewModel.users;
-
-
-    if (recordPayment.id == 0) {
+    if (recordPayment.id == '') {
       dateTime = DateTime.now();
       recordPayment.payerId = mainViewModel.user.id;
       recordPayment.houseId = mainViewModel.house.id;
     } else {
       dateTime = DateTime.parse(recordPayment.date);
     }
-    users.removeWhere((element) => element.id == recordPayment.payerId);
     payerChecker = recordPayment.payerId == mainViewModel.user.id;
   }
-
+  Future<void> updateUsers() async {
+    List<dynamic> jsonList =
+    await _houseRepository.getUsersByHouseApi(recordPayment.houseId);
+    users = jsonList.map((jsonObject) => User.fromJson(jsonObject)).toList();
+    users.removeWhere((element) => element.id == recordPayment.payerId);
+    notifyListeners();
+  }
   void updateDateTime(var value) {
     dateTime = value;
     notifyListeners();
   }
-
   void updateMemberGroup(var value) {
     memberGroup = value;
     notifyListeners();
@@ -73,7 +78,7 @@ class RecordViewModel extends ChangeNotifier {
   Future<void> createRecord() async {
 
 
-    recordPayment.date = DateFormat('y-M-d').format(dateTime);
+    recordPayment.date = DateFormat('yyyy-MM-dd').format(dateTime);
     switch (memberGroup) {
       case MemberGroup.member:
         {
@@ -96,37 +101,34 @@ class RecordViewModel extends ChangeNotifier {
           }
         }
     }
+    receiveNotifyList.addAll(recordPayment.participantIds);
     recordPayment.participantIds.add(recordPayment.payerId);
-    List<int> receiveNotifyList = [...recordPayment.participantIds];
-    receiveNotifyList.removeWhere((element) => element==recordPayment.payerId);
-    if(recordPayment.id==0) {
-      await mainViewModel.createRecord(recordPayment.toJson());
+    if(recordPayment.id=='') {
+      recordPayment.id ='${DateFormat("sshhmmddMMyyyy").format(DateTime.now())}${recordPayment.payerId}';
       await _notificationRepository.createNotification({
 
-          "deepLink": "record/show",
+          "deepLink": "record/${recordPayment.id}",
           "title": "Ghi chép được tạo từ nhà trọ ${mainViewModel.house.name}",
           "name": "RecordCreated",
           "isRead": false,
-          "time": DateFormat("s:m:H dd/MM/yyyy").format(DateTime.now()).toString(),
+          "time": DateFormat("ss:mm:HH dd/MM/yyyy").format(DateTime.now()).toString(),
           "notificationText":"Bản ghi chép chi tiêu được tạo bởi ${mainViewModel.usersById[recordPayment.payerId]?.username}",
-          "userIds": receiveNotifyList
+          "userIds": receiveNotifyList.toList()
 
       });
     } else {
-      await mainViewModel.saveRecord(recordPayment.toJson(),recordPayment.id);
-      print(receiveNotifyList);
+
       await _notificationRepository.createNotification({
 
-
-      "deepLink": "record/show",
+      "deepLink": "record/${recordPayment.id}",
       "title": "Ghi chép được sửa từ nhà trọ ${mainViewModel.house.name}",
       "name": "RecordCreated",
       "isRead": false,
-      "time": DateFormat("s:m:H dd/MM/yyyy").format(DateTime.now()).toString(),
+      "time": DateFormat("ss:mm:HH dd/MM/yyyy").format(DateTime.now()).toString(),
       "notificationText":"Bản ghi chép chi tiêu được sửa bởi ${mainViewModel.usersById[recordPayment.payerId]?.username}",
-      "userIds": receiveNotifyList
-
+      "userIds": receiveNotifyList.toList()
       });
     }
+    await mainViewModel.saveRecord(recordPayment.toJson(),recordPayment.id);
   }
 }

@@ -51,6 +51,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter demo',
       theme: MaterialTheme(GoogleFonts.robotoTextTheme()).light(),
       home: Container(

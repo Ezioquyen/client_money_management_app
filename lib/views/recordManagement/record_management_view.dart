@@ -52,7 +52,7 @@ class RecordManagementView extends StatelessWidget {
             icon: Icons.add,
             onPress: () {
               showModalBottomSheet(
-                  builder: (BuildContext buildContext) => RecordView(recordPayment: RecordPayment(participantIds: [], houseId: '', paymentGroup: -1, id: 0, money: 0, date: '', information: '', paid: false, payerId: 0),
+                  builder: (BuildContext buildContext) => RecordView(recordPayment: RecordPayment(participantIds: [], houseId: '', paymentGroup: -1, id: '', money: 0, date: '', information: '', paid: false, payerId: 0),
                   ),
                   context: context);
             },

@@ -35,11 +35,6 @@ mixin RecordMixin{
 
   }
 
-  Future<dynamic> createRecord(var data) async {
-    await recordRepository.createRecordApi(data);
-
-  }
-
   Future<dynamic> saveRecord(var data, var id) async {
 
     await recordRepository.saveRecordApi(data, id);
