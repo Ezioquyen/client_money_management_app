@@ -2,36 +2,36 @@ import 'dart:math';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:untitled1/models/house.dart';
 import 'package:untitled1/models/payment_group.dart';
 
 import 'package:untitled1/repository/group_repository.dart';
 
 import 'package:untitled1/repository/house_repository.dart';
+import 'package:untitled1/repository/user_repository.dart';
 import 'package:untitled1/viewModels/mixins/record_mixins.dart';
 
 import '../models/user/user.dart';
-import '../models/user_house.dart';
 import '../repository/notification_repository.dart';
 
 class MainViewModel extends ChangeNotifier with RecordMixin {
   final _notification = NotificationRepository();
   final _houseRepository = HouseRepository();
   final _groupRepository = GroupRepository();
+  final _userRepository = UserRepository();
   int unreadNotify = 0;
   List<User> users = [];
-  Map<int, User> usersById = {};
   List<House> houses = [];
 
   Future<void> updateHouse(House value) async {
-    usersById.clear();
     house = value;
     records = [];
     await updateUsers();
     await getGroups();
     dateList = await recordRepository.getDateOfRecordsApi(house.id);
     if (dateList.isEmpty) {
-      await updateDate("${DateTime.now().month}/${DateTime.now().year}");
+      await updateDate(DateFormat('MM/yyyy').format(DateTime.now()));
     } else {
       await updateDate(dateList[0]);
     }
@@ -40,11 +40,8 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
 
   Future<void> updateUsers() async {
     List<dynamic> jsonList =
-        await _houseRepository.getUsersByHouseApi(house.id);
+        await _userRepository.getUserByDateApi(house.id,DateFormat('yyyy-MM-dd').format(DateTime.now()));
     users = jsonList.map((jsonObject) => User.fromJson(jsonObject)).toList();
-    for (User user in users) {
-      usersById[user.id] = user;
-    }
   }
 
   Future<void> initial(User user) async {
@@ -62,8 +59,15 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   }
 
   Future<dynamic> joinHouse(bool role, String id) async {
-    await _houseRepository.joinHouse(UserHouse(user.id, id, role), id, user.id);
+    await _houseRepository.joinHouse({
+      'id': {'houseId': id, 'userId': user.id},
+      "house": {"id": id},
+      "user": {"id": user.id},
+      'userRole': role,
+      'joinDate': DateFormat('yyyy-MM-dd').format(DateTime.now())
+    });
     await getHouses();
+    await updateHouse(houses.first);
   }
 
   Future<dynamic> getHouses() async {
@@ -74,15 +78,13 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
 
   Future<dynamic> createHouse(String name, String information) async {
     String code = generateRandomCode(7);
-    DateTime now = DateTime.now();
-    DateTime date = DateTime(now.year, now.month, now.day);
     while (await _houseRepository.isHouseExistApi(code)) {
       code = generateRandomCode(7);
     }
     await _houseRepository.createHouse(House(
         id: code,
         name: name,
-        date: date.toString(),
+        date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
         information: information,
         role: true));
     await joinHouse(true, code);
@@ -125,7 +127,6 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
 
   Future<dynamic> getUnreadNotify() async {
     unreadNotify = await _notification.getUnreadNotificationByUser(user.id);
-    print(unreadNotify);
     notifyListeners();
   }
 
@@ -136,20 +137,17 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   void removeData() {
     unreadNotify = 0;
     users = [];
-    usersById = {};
+
     houses = [];
     paid = 0;
     debt = 0;
-    user = User(id: 0, username: 'user', email: 'example@gmail.com');
+    user = User(username: 'user', email: 'example@gmail.com');
     selectedDate = "${DateTime.now().month}/${DateTime.now().year}";
     groups = [];
     dateList = [];
     records = [];
     house = House(
-        id: '',
         name: 'Loading',
-        information: '',
-        role: true,
-        date: '06/12/2023');
+        );
   }
 }

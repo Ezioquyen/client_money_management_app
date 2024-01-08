@@ -3,7 +3,7 @@ class PaymentGroup{
   int id;
   String houseId;
   List<int> userIds;
- PaymentGroup({required this.id, required this.name,required this.houseId,required this.userIds});
+ PaymentGroup({this.id =0, this.name ='', this.houseId ='', this.userIds = const[]});
   factory PaymentGroup.fromJson(Map<String, dynamic> json) {
     return PaymentGroup(
       id: json['id'] ?? '',

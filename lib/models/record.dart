@@ -1,27 +1,44 @@
-class RecordPayment{
-  String id = '';
+import 'package:untitled1/models/user/user.dart';
+
+class RecordPayment {
+  String id;
   int money;
   String date;
   String information;
   int paymentGroup;
   bool paid;
-  int payerId;
+
+  User payer = User();
+
   String houseId;
   List<int> participantIds;
-  RecordPayment({required this.participantIds,required this.houseId, required this.paymentGroup,required this.id, required this.money, required this.date, required this.information, required this.paid, required this.payerId});
+
+  RecordPayment({
+    required this.payer,
+    required this.participantIds,
+    this.houseId = '',
+    this.paymentGroup = -1,
+    this.id = '',
+    this.money = 0,
+    this.date = '',
+    this.information = '',
+    this.paid = false,
+  });
+
   factory RecordPayment.fromJson(Map<String, dynamic> json) {
     return RecordPayment(
-      id: json['id'] ?? 0,
+      id: json['id'] ?? '',
       money: json['money'] ?? 0,
-      date: json['date']?? '',
+      date: json['date'] ?? '',
       information: json['information'] ?? '',
       paymentGroup: json['paymentGroup'] ?? '',
       paid: json['paid'] ?? false,
-      payerId: json['payerId'] ?? 0,
+      payer: User.fromJson(json['payer']),
       houseId: json['houseId'] ?? '',
       participantIds: List<int>.from(json['participantIds']),
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -30,7 +47,11 @@ class RecordPayment{
       'date': date,
       'paymentGroup': paymentGroup,
       'paid': paid,
-      'payerId': payerId,
+      'payer': {
+        "id": payer.id,
+        "email": payer.email,
+        "username": payer.username
+      },
       'houseId': houseId,
       'participantIds': participantIds
     };

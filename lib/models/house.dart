@@ -6,7 +6,7 @@ class House{
   String date;
   bool role;
 
-  House({required this.id, required this.name, required this.date,required this.information, required this.role});
+  House({this.id ='', this.name ='',  this.date ='',this.information ='', this.role = false});
   factory House.fromJson(Map<String, dynamic> json) {
     return House(
       id: json['id'] ?? '',

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled1/models/record.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:untitled1/models/user/user.dart';
+import 'package:untitled1/views/analyze/analyze_view.dart';
 import 'package:untitled1/views/houseControl/house_control_view.dart';
 import 'package:untitled1/views/main_view/components/record_view.dart';
 import 'package:untitled1/views/notification_view/notification_view.dart';
@@ -64,10 +66,12 @@ class MainViewChildState extends State<MainViewChild> {
               const SizedBox(
                 width: 200,
               ),
-              const IconButton(
-                  icon: Icon(Icons.stacked_line_chart),
+             IconButton(
+                  icon: const Icon(Icons.stacked_line_chart),
                   tooltip: "Static",
-                  onPressed: null),
+                  onPressed: ()
+                 =>   Navigator.push(context, MaterialPageRoute(builder: (builderContext)=> const AnalyzeView()))
+                  ),
             ],
           ),
         ),
@@ -77,16 +81,7 @@ class MainViewChildState extends State<MainViewChild> {
         onPress: () {
           showModalBottomSheet(
               builder: (BuildContext context) => RecordView(
-                    recordPayment: RecordPayment(
-                        participantIds: [],
-                        houseId: '',
-                        paymentGroup: -1,
-                        id: '',
-                        money: 0,
-                        date: '',
-                        information: '',
-                        paid: false,
-                        payerId: 0),
+                    recordPayment: RecordPayment(payer: User(),participantIds: []),
                   ),
               context: context);
         },
@@ -225,8 +220,7 @@ class MainViewChildState extends State<MainViewChild> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                Provider.of<MainViewModel>(context)
-                    .usersById[recordPayment.payerId]!
+                recordPayment.payer
                     .username,
                 style: TextStyle(fontSize: 20, color: Colors.deepPurple[600]),
               ),

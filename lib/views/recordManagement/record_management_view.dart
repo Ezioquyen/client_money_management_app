@@ -4,6 +4,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled1/models/payment_group.dart';
 import 'package:untitled1/models/record.dart';
+import 'package:untitled1/models/user/user.dart';
 import 'package:untitled1/views/recordManagement/record_filter.dart';
 
 import '../../viewModels/main_view_model.dart';
@@ -52,7 +53,7 @@ class RecordManagementView extends StatelessWidget {
             icon: Icons.add,
             onPress: () {
               showModalBottomSheet(
-                  builder: (BuildContext buildContext) => RecordView(recordPayment: RecordPayment(participantIds: [], houseId: '', paymentGroup: -1, id: '', money: 0, date: '', information: '', paid: false, payerId: 0),
+                  builder: (BuildContext buildContext) => RecordView(recordPayment: RecordPayment(payer: User(),participantIds: []),
                   ),
                   context: context);
             },
@@ -205,7 +206,7 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
                             Checkbox(value: recordManagementViewModel.payerChecker, onChanged: (value){
                               recordManagementViewModel.updatePayerChecker(value);
                             }),
-                            Text('Chi tiêu của bạn')
+                            const Text('Chi tiêu của bạn')
                           ],
                         ))
                   ],
@@ -230,11 +231,10 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
                                 .length,
                             itemBuilder: (context, index) {
                               return Slidable(
-                                endActionPane: ActionPane(motion: BehindMotion(), children: [ElevatedButton(
+                                endActionPane: ActionPane(motion: const BehindMotion(), children: [ElevatedButton(
                                     onPressed: (){
-                                      print('removed');
                                     },
-                                    child: Icon(Icons.delete))],) ,
+                                    child: const Icon(Icons.delete))],) ,
                                 child: ListTile(
                                     onTap: () {
                                       showModalBottomSheet(
@@ -278,10 +278,7 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    Provider.of<MainViewModel>(context)
-                        .usersById[recordPayment.payerId]!
-                        .username,
+                  Text(recordPayment.payer.username,
                     style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,

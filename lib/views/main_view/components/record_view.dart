@@ -55,7 +55,7 @@ class RecordViewState extends State<ViewRecordChild> {
               Row(
                 children: [
                   Text(
-                      'Người chi: ${createRecordModel.mainViewModel.usersById[createRecordModel.recordPayment.payerId]?.username}'),
+                      'Người chi: ${createRecordModel.recordPayment.payer.username}'),
                   Expanded(child: Container()),
                   ElevatedButton(
                       onPressed: createRecordModel.payerChecker
@@ -140,53 +140,49 @@ class RecordViewState extends State<ViewRecordChild> {
                                 selector: (context, myModel) =>
                                     myModel.recordPayment,
                                 builder: (context, recordPayment, child) {
-                                  return Selector<RecordViewModel,
-                                          List<User>>(
+                                  return Selector<RecordViewModel, List<User>>(
                                       selector: (context, myModel) =>
                                           myModel.users,
                                       builder: (context, users, child) {
                                         return ListView.builder(
                                             padding: EdgeInsets.zero,
-                                            itemCount:
-                                                users.length,
+                                            itemCount: users.length,
                                             itemExtent: 50,
                                             itemBuilder: (context, index) {
                                               return Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: 200,
-                                                          child: ListTile(
-                                                            leading: const Icon(
-                                                                Icons.person),
-                                                            title: Text(
-                                                                createRecordModel
-                                                                    .users[
-                                                                        index]
-                                                                    .username),
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                            child: Container()),
-                                                        Checkbox(
-                                                            value: createRecordModel
-                                                                .recordPayment
-                                                                .participantIds
-                                                                .contains(
-                                                                    createRecordModel
-                                                                        .users[
-                                                                            index]
-                                                                        .id),
-                                                            onChanged:
-                                                                createRecordModel
-                                                                        .payerChecker
-                                                                    ? (value) {
-                                                                        createRecordModel.updateParticipant(
-                                                                            value,
-                                                                            index);
-                                                                      }
-                                                                    : null)
-                                                      ],
-                                                    );
+                                                children: [
+                                                  SizedBox(
+                                                    width: 200,
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.person),
+                                                      title: Text(
+                                                          createRecordModel
+                                                              .users[index]
+                                                              .username),
+                                                    ),
+                                                  ),
+                                                  Expanded(child: Container()),
+                                                  Checkbox(
+                                                      value: createRecordModel
+                                                          .recordPayment
+                                                          .participantIds
+                                                          .contains(
+                                                              createRecordModel
+                                                                  .users[index]
+                                                                  .id),
+                                                      onChanged:
+                                                          createRecordModel
+                                                                  .payerChecker
+                                                              ? (value) {
+                                                                  createRecordModel
+                                                                      .updateParticipant(
+                                                                          value,
+                                                                          index);
+                                                                }
+                                                              : null)
+                                                ],
+                                              );
                                             });
                                       });
                                 }))
@@ -249,9 +245,10 @@ class RecordViewState extends State<ViewRecordChild> {
           .updateDateTime(picked);
     }
   }
+
   @override
   void initState() {
     super.initState();
-    Provider.of<RecordViewModel>(context,listen: false).updateUsers();
+    Provider.of<RecordViewModel>(context, listen: false).updateUsers();
   }
 }

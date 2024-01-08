@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled1/models/notification_model.dart';
 import 'package:untitled1/providers/user_provider.dart';
+import 'package:untitled1/viewModels/main_view_model.dart';
 import 'package:untitled1/viewModels/notification_view_model.dart';
 import 'package:untitled1/views/notification_view/components/notification_container.dart';
 
@@ -42,6 +43,8 @@ class NotificationViewBody extends StatelessWidget {
             child: const Icon(Icons.mark_chat_read),
             onTap: () async{
               await notificationViewModel.readAllNotification();
+              if(!context.mounted) return;
+              await Provider.of<MainViewModel>(context,listen: false).getUnreadNotify();
             },
           )
         ],

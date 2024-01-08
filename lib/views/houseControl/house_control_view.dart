@@ -184,10 +184,13 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
               ))),
     );
   }
-
+  Future<void> getGroup()async{
+    Provider.of<HouseControlViewModel>(context,listen: false).getGroups();
+    }
   @override
   void initState() {
     super.initState();
+    getGroup();
   }
 }
 

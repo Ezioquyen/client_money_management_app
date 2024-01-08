@@ -11,7 +11,7 @@ import 'main_view_model.dart';
 
 class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
   late MainViewModel mainViewModel;
-  PaymentGroup selectedGroup = PaymentGroup(id: 0, name: '', houseId: '', userIds: []);
+  PaymentGroup selectedGroup = PaymentGroup();
   bool payerChecker = false;
   RecordFilter recordFilter = RecordFilter.all;
   Future<void> initialModel(MainViewModel mainViewModel) async{
@@ -156,8 +156,10 @@ class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
         .toList();
   }
   @override
+
   Future<void> updateDate(date) async {
-    await super.updateDate(date);
+    selectedDate = date;
+    updateRecords();
     notifyListeners();
   }
 }
