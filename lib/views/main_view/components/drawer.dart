@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import '../../../main.dart';
 
 import '../../../models/house.dart';
+import '../../../models/user/user.dart';
 import '../../../providers/user_provider.dart';
 
 import '../../../viewModels/main_view_model.dart';
+import '../../personal_information.dart';
 import 'create_house.dart';
 import 'join_house.dart';
 
@@ -33,37 +34,44 @@ class MyDrawer extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    const CircleAvatar(
-                      radius: 32,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person_outline_rounded),
-                    ),
-                    Text(
-                      Provider.of<UserProvider>(context, listen: false)
-                          .username,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builderContext) =>
+                                    const PersonalPage()));
+                      },
+                      child: const CircleAvatar(
+                        radius: 32,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.person_outline_rounded),
                       ),
                     ),
+                    Selector<MainViewModel, User>(
+                        selector: (context, myModel) => myModel.user,
+                        builder: (context, user, child) {
+                          return Text(
+                            user.username,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
+                          );
+                        }),
                   ],
                 ),
               ),
             ),
-            Selector<MainViewModel,List<House>>(
-               selector: (context,myProvider) => myProvider.houses,
-              builder: (BuildContext context, houses,
-                  child) {
-
+            Selector<MainViewModel, List<House>>(
+              selector: (context, myProvider) => myProvider.houses,
+              builder: (BuildContext context, houses, child) {
                 return SizedBox(
-                    height: houses.isNotEmpty
-                        ? houses.length * 50
-                        : 50,
+                    height: houses.isNotEmpty ? houses.length * 50 : 50,
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: houses.isNotEmpty
-                          ? houses.length
-                          : 1,
+                      itemCount: houses.isNotEmpty ? houses.length : 1,
                       itemExtent: 50,
                       itemBuilder: (context, index) {
                         return houses.isEmpty
@@ -89,8 +97,7 @@ class MyDrawer extends StatelessWidget {
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return  JoinHouse(
-                    );
+                    return const JoinHouse();
                   },
                 );
               },
@@ -104,8 +111,7 @@ class MyDrawer extends StatelessWidget {
                   isScrollControlled: true,
                   context: context,
                   builder: (BuildContext context) {
-                    return const CreateHouse(
-                    );
+                    return const CreateHouse();
                   },
                 );
               },
@@ -114,8 +120,10 @@ class MyDrawer extends StatelessWidget {
                 leading: const Icon(Icons.logout),
                 title: const Text('Đăng xuất'),
                 onTap: () async {
-                  Provider.of<MainViewModel>(context, listen: false).removeData();
-                 await Provider.of<UserProvider>(context, listen: false).removeUserDeviceToken();
+                  Provider.of<MainViewModel>(context, listen: false)
+                      .removeData();
+                  await Provider.of<UserProvider>(context, listen: false)
+                      .removeUserDeviceToken();
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.setBool('isLoggedIn', false);

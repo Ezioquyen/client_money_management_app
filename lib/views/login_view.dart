@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled1/views/main_view/main_view.dart';
-
 import '../providers/user_provider.dart';
 import '../viewModels/login_view_model.dart';
 

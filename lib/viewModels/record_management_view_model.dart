@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:untitled1/models/payment_group.dart';
+import 'package:untitled1/repository/notification_repository.dart';
 
 import 'package:untitled1/viewModels/mixins/record_mixins.dart';
 import 'package:untitled1/views/recordManagement/record_filter.dart';
@@ -11,7 +13,8 @@ import 'main_view_model.dart';
 
 class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
   late MainViewModel mainViewModel;
-  PaymentGroup selectedGroup = PaymentGroup();
+  PaymentGroup selectedGroup = PaymentGroup(userIds: []);
+  final _notificationRepository = NotificationRepository();
   bool payerChecker = false;
   RecordFilter recordFilter = RecordFilter.all;
   Future<void> initialModel(MainViewModel mainViewModel) async{
@@ -19,10 +22,10 @@ class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
     user = mainViewModel.user;
     selectedDate = mainViewModel.selectedDate;
     dateList = mainViewModel.dateList;
-    records = mainViewModel.records;
     house = mainViewModel.house;
     groups = mainViewModel.groups;
     if(groups.isNotEmpty) selectedGroup = groups[0];
+    updateRecords();
   }
 
   void updateRecordFilter(RecordFilter newValue) async {
@@ -82,7 +85,7 @@ class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
         selectedGroup.id,
         selectedDate.toString().split("/")[1],
         selectedDate.toString().split("/")[0]);
-    records = response
+   records = response
         .map((jsonObject) => RecordPayment.fromJson(jsonObject))
         .toList();
   }
@@ -161,5 +164,22 @@ class RecordManagementViewModel extends ChangeNotifier with RecordMixin{
     selectedDate = date;
     updateRecords();
     notifyListeners();
+  }
+  Future<void> removeRecord(RecordPayment recordPayment)async {
+    recordRepository.removeRecordById(recordPayment.id);
+    recordPayment.participantIds.remove(user.id);
+    await _notificationRepository.createNotification({
+      "deepLink": "recordRemoved/${recordPayment.id}",
+      "title": "Ghi chép được xóa từ nhà trọ ${mainViewModel.house.name}",
+      "name": "RecordRemoved",
+      "isRead": false,
+      "time":
+      DateFormat("ss:mm:HH dd/MM/yyyy").format(DateTime.now()).toString(),
+      "notificationText":
+      "Bản ghi chép chi tiêu được xóa bởi ${recordPayment.payer.username}",
+      "userIds": recordPayment.participantIds
+    });
+    mainViewModel.updateDate("${DateTime.now().month}/${DateTime.now().year}");
+    updateRecords();
   }
 }

@@ -47,7 +47,7 @@ class CreateHouse extends StatelessWidget {
                   style: const ButtonStyle(backgroundColor:  MaterialStatePropertyAll<Color>(Colors.purple)),
                   onPressed: () {
                     if (name.value.text != '') {
-                     Provider.of<MainViewModel>(context).createHouse(name.value.text, information.value.text);
+                     Provider.of<MainViewModel>(context,listen: false).createHouse(name.value.text, information.value.text);
                     }
                     Navigator.pop(context);
                   },

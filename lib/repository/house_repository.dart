@@ -6,12 +6,12 @@ import 'package:untitled1/res/api_url.dart';
 
 class HouseRepository{
   final _apiNetworkService = NetworkApiService();
-  Future<dynamic> getHouseApi(String email) async{
-    dynamic response = await _apiNetworkService.getApi("${ApiUrl.userApi}/houses/$email");
+  Future<dynamic> getHouseApi(int id) async{
+    dynamic response = await _apiNetworkService.getApi("${ApiUrl.userApi}/houses/$id");
     return response;
   }
-  Future<dynamic> checkUserHouseApi(String email, String houseId) async{
-    dynamic response = await _apiNetworkService.getApi("${ApiUrl.houseApi}/$houseId/$email");
+  Future<dynamic> checkUserHouseApi(int id, String houseId) async{
+    dynamic response = await _apiNetworkService.getApi("${ApiUrl.houseApi}/$houseId/$id");
     return response;
   }
   Future<dynamic> isHouseExistApi(String id) async{
@@ -19,11 +19,11 @@ class HouseRepository{
     return response;
   }
   Future<dynamic> createHouse(House house) async{
-    dynamic response = await _apiNetworkService.postApi(house.toJson(), "${ApiUrl.houseApi}/create");
+    dynamic response = await _apiNetworkService.putApi(house.toJson(), "${ApiUrl.houseApi}/create");
     return response;
   }
   Future<dynamic> joinHouse(var data) async{
-    dynamic response = await _apiNetworkService.postApi(data,'${ApiUrl.houseApi}/join');
+    dynamic response = await _apiNetworkService.putApi(data,'${ApiUrl.houseApi}/join');
     return response;
   }
   Future<dynamic> isUserHasHouse(int id) async {
@@ -32,6 +32,12 @@ class HouseRepository{
   }
   Future<dynamic> updateName(String id,String data) async {
     await _apiNetworkService.putApi(data,'${ApiUrl.houseApi}/update_name/$id');
+  }
+  Future<dynamic> oldCheck(String houseId,int userId) async {
+   return await _apiNetworkService.getApi('${ApiUrl.houseApi}/check_old_user/$houseId/$userId');
+  }
+  Future<dynamic> joinOld(String id,int uId) async {
+    await _apiNetworkService.putApi(null,'${ApiUrl.houseApi}/join_old_user/$id/$uId');
   }
 
 }

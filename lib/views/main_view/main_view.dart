@@ -9,6 +9,7 @@ import 'package:untitled1/views/analyze/analyze_view.dart';
 import 'package:untitled1/views/houseControl/house_control_view.dart';
 import 'package:untitled1/views/main_view/components/record_view.dart';
 import 'package:untitled1/views/notification_view/notification_view.dart';
+import 'package:untitled1/views/personal_information.dart';
 import 'package:untitled1/views/recordManagement/record_management_view.dart';
 import '../../models/house.dart';
 import '../../providers/user_provider.dart';
@@ -66,12 +67,13 @@ class MainViewChildState extends State<MainViewChild> {
               const SizedBox(
                 width: 200,
               ),
-             IconButton(
+              IconButton(
                   icon: const Icon(Icons.stacked_line_chart),
                   tooltip: "Static",
-                  onPressed: ()
-                 =>   Navigator.push(context, MaterialPageRoute(builder: (builderContext)=> const AnalyzeView()))
-                  ),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (builderContext) => const AnalyzeView()))),
             ],
           ),
         ),
@@ -81,7 +83,8 @@ class MainViewChildState extends State<MainViewChild> {
         onPress: () {
           showModalBottomSheet(
               builder: (BuildContext context) => RecordView(
-                    recordPayment: RecordPayment(payer: User(),participantIds: []),
+                    recordPayment:
+                        RecordPayment(payer: User(), participantIds: []),
                   ),
               context: context);
         },
@@ -116,7 +119,7 @@ class MainViewChildState extends State<MainViewChild> {
           Selector<MainViewModel, int>(
             builder: (context, unreadNotify, child) {
               return badges.Badge(
-                showBadge: unreadNotify!=0,
+                showBadge: unreadNotify != 0,
                 badgeStyle: badges.BadgeStyle(
                   badgeColor: Colors.deepPurple,
                   padding: const EdgeInsets.all(5),
@@ -124,9 +127,9 @@ class MainViewChildState extends State<MainViewChild> {
                 ),
                 position: badges.BadgePosition.topEnd(top: -5, end: 3),
                 badgeContent: Text(
-                        '$unreadNotify',
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                  '$unreadNotify',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -149,42 +152,55 @@ class MainViewChildState extends State<MainViewChild> {
           ),
         ],
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(90),
-            child: getAppBottomView(Provider.of<UserProvider>(context))),
+          preferredSize: const Size.fromHeight(90),
+          child: Selector<MainViewModel, User>(
+              selector: (context, myModel) => myModel.user,
+              builder: (context, user, child) {
+                return getAppBottomView(user);
+              }),
+        ),
       ),
       body: showRecord(),
     );
   }
 
-  Widget getAppBottomView(UserProvider user) {
-    return Container(
-      padding: const EdgeInsets.only(left: 30, bottom: 20),
-      child: Row(
-        children: [
-          getProfileView(),
-          Container(
-            margin: const EdgeInsets.only(left: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.username,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 24,
-                      color: Colors.white),
-                ),
-                Text(
-                  user.email,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.white,
+  Widget getAppBottomView(User user) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (builderContext) => const PersonalPage()));
+      },
+      child: Container(
+        padding: const EdgeInsets.only(left: 30, bottom: 20),
+        child: Row(
+          children: [
+            getProfileView(),
+            Container(
+              margin: const EdgeInsets.only(left: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.username,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                        color: Colors.white),
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
+                  Text(
+                    user.email,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -220,8 +236,7 @@ class MainViewChildState extends State<MainViewChild> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                recordPayment.payer
-                    .username,
+                recordPayment.payer.username,
                 style: TextStyle(fontSize: 20, color: Colors.deepPurple[600]),
               ),
               Text(

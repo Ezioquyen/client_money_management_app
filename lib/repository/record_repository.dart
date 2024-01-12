@@ -53,4 +53,10 @@ class RecordRepository{
   Future<dynamic> getRecordById(String id)async{
     return await _apiNetworkService.getApi("${ApiUrl.recordApi}/getById/$id");
   }
+  Future<dynamic> removeRecordById(String id)async{
+    return await _apiNetworkService.putApi(null,"${ApiUrl.recordApi}/remove/$id");
+  }
+  Future<dynamic> getRemovedRecordById(String id)async{
+    return await _apiNetworkService.getApi("${ApiUrl.recordApi}/getRemovedById/$id");
+  }
 }

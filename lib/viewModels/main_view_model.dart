@@ -23,12 +23,16 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   int unreadNotify = 0;
   List<User> users = [];
   List<House> houses = [];
+  List<PaymentGroup> allHouseGroup = [];
 
   Future<void> updateHouse(House value) async {
     house = value;
     records = [];
     await updateUsers();
     await getGroups();
+
+    await getGroupInHouse();
+
     dateList = await recordRepository.getDateOfRecordsApi(house.id);
     if (dateList.isEmpty) {
       await updateDate(DateFormat('MM/yyyy').format(DateTime.now()));
@@ -39,8 +43,8 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   }
 
   Future<void> updateUsers() async {
-    List<dynamic> jsonList =
-        await _userRepository.getUserByDateApi(house.id,DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    List<dynamic> jsonList = await _userRepository.getUserByDateApi(
+        house.id, DateFormat('yyyy-MM-dd').format(DateTime.now()));
     users = jsonList.map((jsonObject) => User.fromJson(jsonObject)).toList();
   }
 
@@ -71,7 +75,7 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   }
 
   Future<dynamic> getHouses() async {
-    List<dynamic> jsonList = await _houseRepository.getHouseApi(user.email);
+    List<dynamic> jsonList = await _houseRepository.getHouseApi(user.id);
     houses = jsonList.map((jsonObject) => House.fromJson(jsonObject)).toList();
     notifyListeners();
   }
@@ -134,6 +138,10 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
     return recordRepository.getRecordById(id);
   }
 
+  Future<dynamic> getRemovedRecordById(String id) async {
+    return recordRepository.getRemovedRecordById(id);
+  }
+
   void removeData() {
     unreadNotify = 0;
     users = [];
@@ -147,7 +155,59 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
     dateList = [];
     records = [];
     house = House(
-        name: 'Loading',
-        );
+      name: 'Loading',
+    );
+  }
+
+  void notify() {
+    notifyListeners();
+  }
+
+  Future<dynamic> removeUser(int id) async {
+    await _userRepository.leaveHouse(
+        house.id, id, DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    await updateUsers();
+    if(id == user.id) {
+      await getHouses();
+      await updateHouse(houses.first);
+    }else {
+      notifyListeners();
+    }
+  }
+
+  Future<void> getGroupInHouse() async {
+    List<dynamic> jsonList;
+    jsonList = await _groupRepository.getGroupByHouseApi(house.id);
+
+    allHouseGroup = jsonList
+        .map((jsonObject) => PaymentGroup.fromJson(jsonObject))
+        .toList();
+  }
+
+  Future<void> removeGroup(int id) async {
+    await _groupRepository.removeGroupByHouseApi(id);
+    await getGroups();
+    await getGroupInHouse();
+    notifyListeners();
+  }
+
+  Future<void> updateName(String name) async {
+    await _houseRepository.updateName(house.id, name);
+    House newHouse = House();
+    newHouse.name = name;
+    newHouse.id = house.id;
+    newHouse.role = house.role;
+    newHouse.information = house.information;
+    newHouse.date = house.date;
+    getHouses();
+    await updateHouse(newHouse);
+    notifyListeners();
+  }
+
+  Future<void> updateUserInformation(User newUser) async {
+    await _userRepository.updateInformationApi(newUser);
+    await updateUsers();
+    user = newUser;
+    notifyListeners();
   }
 }

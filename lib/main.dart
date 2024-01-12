@@ -1,7 +1,4 @@
-
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,24 +13,24 @@ import 'package:untitled1/views/main_view/main_view.dart';
 import 'package:untitled1/views/sign_up_view.dart';
 
 import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await FireBaseApi().initNotification();
-
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) =>
-          MainViewModel()
-      ),
+      ChangeNotifierProvider(create: (context) => MainViewModel()),
       Provider<UserProvider>.value(
         value:
-        UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
+            UserProvider(id: 1, username: 'User', email: 'example@gmail.com'),
       ),
     ],
     child: const MyApp(),
-  ) );
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -119,9 +116,12 @@ class _HomeViewBody extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const LoginPage()));
                 },
-                child: const Text('ĐĂNG NHẬP',style: TextStyle(
-                  fontSize: 20,
-                ),)),
+                child: const Text(
+                  'ĐĂNG NHẬP',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                )),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -129,9 +129,12 @@ class _HomeViewBody extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => const SignUpView()));
                 },
-                child: const Text('ĐĂNG KÝ',style: TextStyle(
-                  fontSize: 20,
-                ),))
+                child: const Text(
+                  'ĐĂNG KÝ',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ))
           ],
         ),
       ),
