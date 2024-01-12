@@ -5,7 +5,6 @@ class JsonUtils {
     try {
       return jsonEncode(object);
     } catch (e) {
-      print('Error converting to JSON: $e');
       return '';
     }
   }
@@ -14,7 +13,6 @@ class JsonUtils {
     try {
       return jsonDecode(jsonString);
     } catch (e) {
-      print('Error converting from JSON: $e');
       return null;
     }
   }
@@ -23,11 +21,9 @@ class JsonUtils {
     try {
       return jsonDecode(jsonEncode(object));
     } catch (e) {
-      print('Error converting to map: $e');
       return {};
     }
   }
-
 
   static dynamic fromMap(Map<String, dynamic> jsonMap) {
     try {

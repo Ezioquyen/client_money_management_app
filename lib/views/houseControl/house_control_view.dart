@@ -149,14 +149,6 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
                                         ? Slidable(
                                             key: UniqueKey(),
                                             endActionPane: ActionPane(
-                                              dismissible: DismissiblePane(
-                                                onDismissed: () async {
-                                                  showWarningDialog(
-                                                      context,
-                                                      mainViewModel,
-                                                      users[index]);
-                                                },
-                                              ),
                                               motion: const DrawerMotion(),
                                               extentRatio: 0.25,
                                               children: [
@@ -190,12 +182,6 @@ class HomeControlBodyState extends State<HouseControlBodyWidget> {
                                   ? Slidable(
                                       key: UniqueKey(),
                                       endActionPane: ActionPane(
-                                        dismissible: DismissiblePane(
-                                          onDismissed: () async {
-                                            await mainViewModel
-                                                .removeGroup(groups[index].id);
-                                          },
-                                        ),
                                         motion: const DrawerMotion(),
                                         extentRatio: 0.25,
                                         children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-
 import '../models/house.dart';
 import '../models/user/user.dart';
 import '../views/houseControl/member_group.dart';
@@ -10,7 +9,6 @@ class HouseControlViewModel extends ChangeNotifier {
   User user;
   House house;
 
-
   MemberGroup get memberGroup => _memberGroup;
 
   HouseControlViewModel(this.house, this.user);
@@ -19,6 +17,4 @@ class HouseControlViewModel extends ChangeNotifier {
     _memberGroup = value;
     notifyListeners();
   }
-
-
 }

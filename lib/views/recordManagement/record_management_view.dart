@@ -266,13 +266,6 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
                                       ? Slidable(
                                           key: UniqueKey(),
                                           endActionPane: ActionPane(
-                                            dismissible: DismissiblePane(
-                                              onDismissed: () async {
-                                                await recordManagementViewModel
-                                                    .removeRecord(
-                                                        records[index]);
-                                              },
-                                            ),
                                             motion: const DrawerMotion(),
                                             extentRatio: 0.25,
                                             children: [
@@ -281,9 +274,7 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
                                                 backgroundColor: Colors.red,
                                                 icon: Icons.delete,
                                                 onPressed: (context) async {
-                                                  await recordManagementViewModel
-                                                      .removeRecord(
-                                                          records[index]);
+                                                  showWarningDialog(context, recordManagementViewModel, records[index]);
                                                 },
                                               ),
                                             ],
@@ -369,6 +360,36 @@ class RecordManagementBodyState extends State<RecordManagementBody> {
           ],
         ),
       ),
+    );
+  }
+  void showWarningDialog(
+      BuildContext context, RecordManagementViewModel recordManagementViewModel, RecordPayment recordPayment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Warning'),
+          content: const Text('Bạn có chắc muốn xóa bản ghi chép này chứ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                await recordManagementViewModel
+                    .removeRecord(
+                   recordPayment);
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('NO'),
+            ),
+          ],
+        );
+      },
     );
   }
 

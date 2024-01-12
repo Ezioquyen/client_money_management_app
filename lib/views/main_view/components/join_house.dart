@@ -17,7 +17,7 @@ class JoinHouse extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController code = TextEditingController();
     return Container(
-      height: MediaQuery.of(context).size.height*0.5,
+      height: MediaQuery.of(context).size.height*0.75,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25.0), topRight: Radius.circular(25.0))),
