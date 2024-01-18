@@ -207,7 +207,9 @@ class MainViewModel extends ChangeNotifier with RecordMixin {
   Future<void> updateUserInformation(User newUser) async {
     await _userRepository.updateInformationApi(newUser);
     await updateUsers();
+
     user = newUser;
+    await getAllRecordsByUsersAndHouse();
     notifyListeners();
   }
 }

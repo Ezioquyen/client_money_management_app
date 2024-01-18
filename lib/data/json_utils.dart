@@ -29,7 +29,6 @@ class JsonUtils {
     try {
       return jsonMap;
     } catch (e) {
-      print('Error converting from map: $e');
       return null;
     }
   }

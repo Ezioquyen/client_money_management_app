@@ -107,7 +107,7 @@ class GroupControlState extends State<GroupControl> {
 
     widget.paymentGroup.houseId = mainViewModel.house.id;
     widget.paymentGroup.name = name;
-    if (!(await _groupRepository.checkGroupByHouseApi(
+    if (widget.paymentGroup.id!=0||!(await _groupRepository.checkGroupByHouseApi(
         mainViewModel.house.id, name))) {
       await _groupRepository.createGroupApi(widget.paymentGroup);
       await mainViewModel.getGroupInHouse();
@@ -130,6 +130,7 @@ class GroupControlState extends State<GroupControl> {
     setState(() {});
   }
   void notify(MainViewModel mainViewModel) {
+    widget.paymentGroup.userIds.remove(mainViewModel.user.id);
     _notificationRepository.createNotification({
       "deepLink": "none",
       "title": "Thay đổi trong nhà trọ ${mainViewModel.house.name}",
